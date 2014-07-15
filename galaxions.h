@@ -7,7 +7,8 @@
 
 #include "gas.h"
 #include "magnfield.h"
-#include "farrar.h"
+#include "Farrar.h"
+#include "Pshirkov.h"
 
 enum MagneticFieldType { CONSTANT, FARRAR, PSHIRKOV };
 

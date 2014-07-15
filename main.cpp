@@ -18,7 +18,8 @@ int main(int argc, char** argv)
   
   galAxions * g = new galAxions (mass,gag,initFilename);
   
-  g->createMagneticField(FARRAR);
+  //  g->createMagneticField(FARRAR);
+  g->createMagneticField(PSHIRKOV);
   
   g->createGasDensity();
 

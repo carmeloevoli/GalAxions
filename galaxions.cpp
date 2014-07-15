@@ -12,6 +12,7 @@ void galAxions::createMagneticField(const MagneticFieldType& _btype)
   }
   else if ( _btype == PSHIRKOV ){
     std::cout<<"#Init Pshirkov magnetic field!"<<std::endl;
+    magneticField = new PshirkovField(0, 2.0, 5., 1., 10., 4.0, 8., 1.3, 0.0, 8.5, 2.0);
   }
 
   return;
@@ -28,7 +29,8 @@ void galAxions::createGasDensity()
 void galAxions::createLos(const double& ldeg, const double& bdeg)
 { 
   los.l = ldeg*DegToRad; // \phi in [0,2\pi] 
-  los.b = (bdeg < 0) ? (90.0-bdeg)*DegToRad : -1; // \theta in [0,\pi]
+  //los.b = (bdeg < 0) ? (90.0-bdeg)*DegToRad : -1; // \theta in [0,\pi]
+  los.b = bdeg*DegToRad;
     
   //getArrays(los, magneticField, distance_array, Bfield, psik, el_dens, gas_densH2, gas_densHI);
   
@@ -41,10 +43,10 @@ void galAxions::createLos(const double& ldeg, const double& bdeg)
   double cosbcosl = cosb*cosl;
   double cosbsinl = cosb*sinl;
     
-  double d = 0.0;
-  float zz = 0.0;
-  float xs = 0.0;
-  float ys = 0.0;
+  double distanceAlongLos = 0.0;
+  double zGalactoCentric = 0.0;
+  double xGalactoCentric = 0.0;
+  double yGalactoCentric = 0.0;
   
   std::vector<double> ydir;
   std::vector<double> xdir(3,0.0);
@@ -57,23 +59,29 @@ void galAxions::createLos(const double& ldeg, const double& bdeg)
   bool done = false;
   
   std::vector<double> Bperp;
-  
-  while (fabs(xs) < xmax && fabs(ys) < ymax && fabs(zz) < zmax) {
+  std::vector<double> Btot;
+
+  while ( fabs(xGalactoCentric) < xmax && fabs(yGalactoCentric) < ymax && fabs(zGalactoCentric) < zmax ){
     
-    d += ds;
+    distanceAlongLos += ds; // [kpc]
+    
     //cout<<d<<"\t"<<ds<<"\t"<<xs<<"\t"<<ys<<"\t"<<zz<<endl;
     
-    zz=d*sinb;
+    zGalactoCentric = distanceAlongLos*sinb;
     
     if (xSun<0) 
-      xs = xSun + d*cosbcosl;
-    else  xs = xSun - d*cosbcosl;
+      xGalactoCentric = xSun + distanceAlongLos*cosbcosl;
+    else  
+      xGalactoCentric = xSun - distanceAlongLos*cosbcosl;
     
-    ys = d*cosbsinl;
+    yGalactoCentric = distanceAlongLos*cosbsinl;
     
-    Bperp = magneticField->GetBperp(xs,zz,ys); // [nG]
+    Bperp = magneticField->GetBperp(xGalactoCentric,zGalactoCentric,yGalactoCentric); // [nG]
+    Btot = magneticField->GetB(xGalactoCentric,zGalactoCentric,yGalactoCentric);
+
+    //los.magneticField.push_back( std::sqrt(Bperp[0]*Bperp[0] + Bperp[1]*Bperp[1] + Bperp[2]*Bperp[2]) );
     
-    los.magneticField.push_back( std::sqrt(Bperp[0]*Bperp[0] + Bperp[1]*Bperp[1] + Bperp[2]*Bperp[2]) );
+    los.magneticField.push_back( std::sqrt(Btot[0]*Btot[0] + Btot[1]*Btot[1] + Btot[2]*Btot[2]) );
     
     //cerr<<scientific<<d<<"\t"<<Bfield.back()<<endl;
     
@@ -103,19 +111,19 @@ void galAxions::createLos(const double& ldeg, const double& bdeg)
     else testpsik = 0.0;
       
     los.psik.push_back(testpsik);
-    los.distance.push_back(d*1e-3);  // [Mpc]
+    los.distance.push_back(distanceAlongLos);  // [kpc]
     
     //std::cerr<<std::scientific<<los.distance.back()<<"\t"<<los.psik.back()<<std::endl;
     
-    double rs = std::sqrt(xs*xs+ys*ys);
+    double rGalactoCentric = std::sqrt(xGalactoCentric*xGalactoCentric+yGalactoCentric*yGalactoCentric);
     
-    los.electronDensity.push_back( gas->getElectrons(rs,zz) );
-    los.H2Density.push_back( gas->getH2(rs,zz) );
-    los.HIDensity.push_back( gas->getHI(rs,zz) );
+    los.electronDensity.push_back( gas->getElectrons(rGalactoCentric,zGalactoCentric) );
+    los.H2Density.push_back( gas->getH2(rGalactoCentric,zGalactoCentric) );
+    los.HIDensity.push_back( gas->getHI(rGalactoCentric,zGalactoCentric) );
   }
-
+  
   los.nSteps = los.distance.size();
-
+  
   std::cout<<std::scientific<<std::setprecision(3);
 
   for ( unsigned int i=0;i<los.nSteps;i++ ){
