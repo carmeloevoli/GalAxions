@@ -1,6 +1,7 @@
 #ifndef __FeLine_farrar_h
 #define __FeLine_farrar_h
 
+#include <cmath>
 #include "magnfield.h"
 
 class FarrarField : public MagneticField {

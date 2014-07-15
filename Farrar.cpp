@@ -1,8 +1,4 @@
-#include "farrar.h"
-
-//#include "include/constants.h"
-//#include "TMath.h"
-//using namespace std;
+#include "Farrar.h"
 
 FarrarField::FarrarField(int N) : MagneticField(N) {
   
