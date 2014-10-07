@@ -1,57 +1,53 @@
 #include "magnfield.h"
 
-void MagneticField::Add(MagneticField* B) {
+std::vector<double> ConstantField::GetB(const double& x_, 
+					const double& y_, 
+					const double& z_)
+{
+  std::vector<double> Bret;
+
+  Bret.push_back( BConstant/std::sqrt(3.0) );   
+  Bret.push_back( .0/*BConstant/std::sqrt(3.0)*/ ); 
+  Bret.push_back( .0/*BConstant/std::sqrt(3.0)*/ ); 
   
-  if (Dim != B->GetDim()) {
-    std::cerr<<"Trying to sum incompatible magnetic fields!"<<std::endl;
-    return ;
-  }
-  
-  std::map<int, std::vector< std::vector< std::vector<double> > > > Br1 = B->GetB();
-  
-  for (int dir = 0; dir < 3; dir++) {
-    for (int i = 0; i < Dim; i++) {
-      for (int j = 0; j < Dim; j++) {
-	for (int k = 0; k < Dim; k++) {
-	  Breg[dir][i][j][k] += Br1[dir][i][j][k];
-	}
-      }
-    }
-  }
-  
-  return ;
+  return Bret;
 }
 
-std::vector<double> MagneticField::GetBperp(double x, double z, double y) {
+std::vector<double> MagneticField::GetBperp(const double& x_,
+					    const double& y_, 
+					    const double& z_) 
+{
+  const double x=x_;
+  const double y=y_;
+  const double z=z_;
+  
+  const double dist = std::sqrt((x-xSun)*(x-xSun)+(y-ySun)*(y-ySun)+(z-zSun)*(z-zSun));
   
   std::vector<double> Bperp(3,0.0);
-  std::vector<double> Binterp = GetB(x,y,z);
+  std::vector<double> Btotal = GetB(x,y,z);
+  std::vector<double> Versor(3,0.0);
   
-  double dist = std::sqrt((x-xSun)*(x-xSun)+(y-ySun)*(y-ySun)+(z-zSun)*(z-zSun));
+  Versor[0] = (x-xSun)/dist;
+  Versor[1] = (y-ySun)/dist;
+  Versor[2] = (z-zSun)/dist;
+  
+  Bperp[0] = -(Btotal[1]*Versor[2]-Btotal[2]*Versor[1]);
+  Bperp[1] =  (Btotal[0]*Versor[2]-Btotal[2]*Versor[0]);
+  Bperp[2] = -(Btotal[0]*Versor[1]-Btotal[1]*Versor[0]);
 
-  Bperp[0] = -(Binterp[1]*(z)-Binterp[2]*(y))/dist*1e3;
-  Bperp[1] = (Binterp[0]*(z)-Binterp[2]*(x-xSun))/dist*1e3;
-  Bperp[2] = -(Binterp[0]*(y)-Binterp[1]*(x-xSun))/dist*1e3;
+#ifdef DEBUGMODE  
+  const double BtotalDotVersor = Btotal[0]*Versor[0]+Btotal[1]*Versor[1]+Btotal[2]*Versor[2];
+  const double BperpDotVersor = Bperp[0]*Versor[0]+Bperp[1]*Versor[1]+Bperp[2]*Versor[2];
+  const double BtotalNorm = normVector(Btotal);
+  const double BperpNorm = normVector(Bperp);
+  const double VersorNorm = normVector(Versor);
+  
+  std::cout<<std::scientific;
+  std::cout<<Versor[0]<<"\t"<<Versor[1]<<"\t"<<Versor[2]<<"\t"<<Bperp[0]<<"\t"<<Bperp[1]<<"\t"<<Bperp[2]<<"\t";
+  std::cout<<BtotalDotVersor/BtotalNorm<<"\t"<<std::sin(std::acos(BtotalDotVersor/BtotalNorm))<<"\t"<<BperpNorm/BtotalNorm<<std::endl;
+#endif  
 
   return Bperp;
 }
 
-double MagneticField::GetBrand(double x, double z, double y) {
-  
-  unsigned int i = int(floor((x-x_grid[0])/(x_grid[1]-x_grid[0])));
-  unsigned int j = int(floor((y-y_grid[0])/(y_grid[1]-y_grid[0])));
-  unsigned int k = int(floor((z-z_grid[0])/(z_grid[1]-z_grid[0])));
-  if (i > x_grid.size()-2) i = x_grid.size()-2;
-  if (j > y_grid.size()-2) j = y_grid.size()-2;
-  if (k > z_grid.size()-2) k = z_grid.size()-2;
-  
-  const double t = (x-x_grid[i])/(x_grid[i+1]-x_grid[i]);
-  const double u = (y-y_grid[j])/(y_grid[j+1]-y_grid[j]);
-  const double v = (z-z_grid[k])/(z_grid[k+1]-z_grid[k]);
-  
-  double Bfield_low = Brand[i][j][k]*(1.0-t)*(1.0-u) + Brand[i+1][j][k]*(t)*(1.0-u) + Brand[i][j+1][k]*(1.0-t)*(u) + Brand[i+1][j+1][k]*(t)*(u);
-  
-  double Bfield_high = Brand[i][j][k+1]*(1.0-t)*(1.0-u) + Brand[i+1][j][k+1]*(t)*(1.0-u) + Brand[i][j+1][k+1]*(1.0-t)*(u) + Brand[i+1][j+1][k+1]*(t)*(u);
-  
-  return Bfield_low*(1.0-v)+Bfield_high*v;
-}
+

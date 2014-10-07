@@ -1,78 +1,81 @@
 #include "Pshirkov.h"
 #include "constants.h"
 
-PshirkovField::PshirkovField(int N, 
-			     double B0, 
-			     double RC, 
-			     double Z0, 
-			     double R0, 
-			     double B0H, 
-			     double R0H, 
-			     double Z0H, 
-			     double B0turb, 
-			     double rscale_turb, 
-			     double zscale_turb) : MagneticField(N) {
+PshirkovField::PshirkovField(const unsigned int& bMode_,
+			     const double& B0Turb_, 
+			     const double& rscaleTurb_, 
+			     const double& zscaleTurb_) : MagneticField() {
   
-  double Bdisk, Bhalo;
+  bMode = bMode_;
   
-  //double B0 = 2.0, RC = 5.0, Z0 = 1.0, R0 = 10.0; 
-  //double B0H = 4., R0H = 8., Z0H = 1.3;
-  
-  for (int i = 0; i < N; i++) {
-    for (int j = 0; j < N; j++) {
-      double r = std::sqrt(x_grid[i]*x_grid[i]+y_grid[j]*y_grid[j]);
-      if (fabs(r) < 1e-3) r = 1e-3;
-      
-      for (int k = 0; k < N; k++) {
-
-	double phi = atan2(y_grid[j],x_grid[i])+M_PI/2.0;
-	double z = z_grid[k];
-        
-	double Z1H = (fabs(z) < Z0H) ? 0.2 : 0.4; 
-	
-	Bdisk = B0 * ((r < RC) ? exp(-fabs(z)/Z0) : exp(-(r-rSun)/R0-fabs(z)/Z0));
-	Bhalo = B0H / (1.+pow((fabs(z)-Z0H)/Z1H,2)) * r/R0H * exp(-1.-r/R0H);
-	
-	Breg[0][i][j][k] = (Bdisk+Bhalo)*cos(phi);
-	Breg[1][i][j][k] = (Bdisk+Bhalo)*sin(phi);
-	Breg[2][i][j][k] = 0.;
-        
-	Brand[i][j][k] = B0turb*exp(-(r-rSun)/rscale_turb)*exp(-fabs(z/zscale_turb));
-      }
-    }
-  }
+  p  = (bMode == ASS) ? -5.0*DegToRad : -6.0*DegToRad; // [ASS,BSS]
+  z0 = 1.0;  // [kpc]
+  d  = -0.6; // [kpc]
+  B0 = 2.0;  // [muG]
+  Rc = 5.0;  // [kpc]
+  z0H = 1.3; // [kpc]
+  R0H = 8.0; // [kpc]
+  B0H[0] = (bMode == ASS) ? 2.0 : 4.0; // [muG] [south]
+  B0H[1] = 4.0;  // [mug] [north]
+  z1H[0] = 0.25; // [kpc] [inner]
+  z1H[1] = 0.40; // [kpc] [outer]
 }
 
-std::vector<double> PshirkovField::GetB(double x, double y, double z) {
+double PshirkovField::GetBdisk(const double& rho_,
+			       const double& theta_,
+			       const double& z_)
+{
+  const double theta = theta_ + M_PI; // CHECK!!
   
+  const double b = 1.0/tan(p);
+  const double phi_disk = b*log(1.0+d/rSun)-M_PI/2.0;
+  
+  double Bdisk = cos(theta - b*log(rho_/rSun) + phi_disk);
+  
+  if (bMode == ASS)
+    Bdisk = std::abs(Bdisk);
+  
+  Bdisk *= exp(-std::abs(z_)/z0);
+  
+  Bdisk *= (rho_ < Rc) ? B0*rSun/Rc/cos(phi_disk) : B0*rSun/rho_/cos(phi_disk) ;
+  
+  //Bret[0] = Bdisk * sin(p[mode_]);
+  //Bret[1] = Bdisk * cos(p[mode_]) * (-1.);
+  
+  return Bdisk;
+}
+
+double PshirkovField::GetBhalo(const double& rho_,
+			       const double& z_)
+{
+  double z1now = (fabs(z_) < z0H) ? z1H[0] : z1H[1]; 
+  double Bhalo = (z_ < 0.) ? B0H[0] : B0H[1];
+  
+  Bhalo /= (1.0+POW2((fabs(z_)-z0H)/z1now)); // Equation 8
+  Bhalo *= rho_/R0H;
+  Bhalo *= exp(1.0-rho_/R0H);
+  
+  return Bhalo;
+}  
+
+std::vector<double> PshirkovField::GetB(const double& x_, 
+					const double& y_, 
+					const double& z_)
+{
   std::vector<double> Bret(3,0);
   
-  double Bdisk, Bhalo;
+  double Bdisk, 
+    Bhalo;
   
-  // Disk parameters from Table 3
+  const double rho = ( sqrt(x_*x_+y_*y_) > 1e-3 ) ? sqrt(x_*x_+y_*y_) : 1e-3;
+  const double theta = atan2(y_,x_);//+M_PI/2.0;
+  const double z = z_;
   
-  const double B0 = 2.0;
-  const double RC = 5.0;
-  const double Z0 = 1.0;
-  const double R0 = 10.0; // WHERE??
+  Bdisk = GetBdisk(rho,theta,z);
+  Bhalo = GetBhalo(rho,z);
   
-  // Halo parameters from Table 3
-  
-  const double B0H = 4.0;
-  const double Z0H = 1.3;
-  const double Z1H = (fabs(z) < Z0H) ? 0.25 : 0.4; 
-  const double R0H = 8.0;
-  
-  double r = std::sqrt(x*x+y*y);
-  if (fabs(r) < 1e-3) r = 1e-3;
-  
-  double phi = atan2(y,x)+M_PI/2.0;
-  
-  Bdisk = B0 * ( (r <= RC) ? exp(-fabs(z)/Z0) : exp(-(r-rSun)/R0-fabs(z)/Z0) ); // Eq. 6 
-  Bhalo = B0H / (1.0+pow((fabs(z)-Z0H)/Z1H, 2)) * r/R0H * exp(1.0-r/R0H); // Eq. 8
-  
-  Bret[0] = (Bdisk+Bhalo)*cos(phi);
-  Bret[1] = (Bdisk+Bhalo)*sin(phi);
+  Bret[0] = (Bdisk+Bhalo)*cos(theta);
+  Bret[1] = (Bdisk+Bhalo)*sin(theta);
   Bret[2] = 0.;
   
   return Bret;  

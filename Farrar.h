@@ -6,13 +6,6 @@
 
 class FarrarField : public MagneticField {
   
- public :
-  FarrarField() { }
-  FarrarField(int);
-  virtual ~FarrarField() { }
-  
-  virtual std::vector<double> GetB(double x, double y, double z);
-  
  protected :
   double bj[8];
   double fj[8];
@@ -34,6 +27,12 @@ class FarrarField : public MagneticField {
   double rX;
   
   double p;
+
+ public :
+  FarrarField();// { }
+  virtual ~FarrarField() { }
+  
+  virtual std::vector<double> GetB(const double&, const double&,const double&);
 };
 
 #endif

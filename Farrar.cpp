@@ -1,6 +1,6 @@
 #include "Farrar.h"
 
-FarrarField::FarrarField(int N) : MagneticField(N) {
+FarrarField::FarrarField() : MagneticField() {
   
   bj[0] = 0.1;
   bj[1] = 3.0;
@@ -9,7 +9,7 @@ FarrarField::FarrarField(int N) : MagneticField(N) {
   bj[4] = -2.0;
   bj[5] = -4.2;
   bj[6] = 0.0;
-  bj[7] = 0.0;//2.7;
+  bj[7] = 0.0; // 2.7; WHY?
   
   fj[0] = 0.130;
   fj[1] = 0.165;
@@ -50,12 +50,14 @@ FarrarField::FarrarField(int N) : MagneticField(N) {
   p = 11.5*DegToRad;
 }
 
-std::vector<double> FarrarField::GetB(double x, double y, double z) {
-  
+std::vector<double> FarrarField::GetB(const double& x_, 
+				      const double& y_, 
+				      const double& z_)
+{
   std::vector<double> Bret(3,0);
   
-  double r = std::sqrt(x*x+y*y);
-  if (r > 20 || std::sqrt(r*r+z*z) < 1) return Bret;
+  const double r = std::sqrt(x_*x_+y_*y_);
+  if (r > 20 || std::sqrt(r*r+z_*z_) < .1) return Bret;
   
   double Bdisk=0;
   double Bhalo=0;
@@ -63,18 +65,18 @@ std::vector<double> FarrarField::GetB(double x, double y, double z) {
   
   double rp=0;
   double ThetaX=0;
-  double phi = std::atan2(y,x);
+  double phi = std::atan2(y_,x_);// + M_PI/2.0;
   double sinphi = sin(phi);
   double cosphi = cos(phi);
-  double Ldisk = 1.0 / (1.0 + exp(-2.0*(fabs(z)-hdisk)/wdisk) );
+  double Ldisk = 1.0/(1.0+exp(-2.0*(fabs(z_)-hdisk)/wdisk));
   
-  if (r > 3.0) {
-    if (r < 5.0) {
+  if ( r > 3.0 ){
+    if ( r < 5.0 ){
       Bret[0] = -bring*sinphi*(1.0-Ldisk);
       Bret[1] = bring*cosphi*(1.0-Ldisk);
     }
     else {
-      double tanfactor = 1.0/tan(PiOver2-p);
+      const double tanfactor = 1.0/tan(PiOver2-p);
       double rxneg = r*exp(-(phi-PI)*tanfactor);
       if (rxneg > rj[7]) rxneg = r*exp(-(phi+PI)*tanfactor);   
       if (rxneg > rj[7]) rxneg = r*exp(-(phi+3.0*PI)*tanfactor);   
@@ -82,7 +84,7 @@ std::vector<double> FarrarField::GetB(double x, double y, double z) {
       for (int loopcounter = 7; loopcounter>=0; loopcounter--) { 
 	if (rxneg < rj[loopcounter]) Bdisk = bj[loopcounter]; }
       
-      Bdisk *= (5.0/r);
+      Bdisk *= (5.0/r) ;
       Bret[0] = Bdisk*sin(p-phi)*( 1.0 - Ldisk );
       Bret[1] = Bdisk*cos(p-phi)*( 1.0 - Ldisk );
     }
@@ -90,7 +92,7 @@ std::vector<double> FarrarField::GetB(double x, double y, double z) {
   
   double Lhalo = 0;
   
-  if (z>=0) { 
+  if (z_>=0) { 
     Bhalo = Bn;
     Lhalo = 1.0 / (1.0 + exp(-2.0*(r-rn)/wh) );
   }
@@ -99,16 +101,16 @@ std::vector<double> FarrarField::GetB(double x, double y, double z) {
     Lhalo = 1.0 / (1.0 + exp(-2.0*(r-rs)/wh) ); 
   }
   
-  Bhalo *= (exp(-fabs(z)/z0)*Ldisk*(1.0-Lhalo));
+  Bhalo *= (exp(-fabs(z_)/z0)*Ldisk*(1.0-Lhalo));
   Bret[0] -= (Bhalo*sinphi);
   Bret[1] += (Bhalo*cosphi);
   
-  double ztheta0x = fabs(z)/tan(Theta0X);
+  double ztheta0x = fabs(z_)/tan(Theta0X);
   double rpcX = rcX+ztheta0x;
   
   if (r<rpcX){ // interior region, with varying elevation angle
     rp   = r*rcX/rpcX;
-    ThetaX = (z!=0) ? atan(fabs(z)/(r-rp)) : PiOver2;
+    ThetaX = (z_!=0) ? atan(fabs(z_)/(r-rp)) : PiOver2;
     Bxx = BX*exp(-rp/rX)*pow(rcX/rpcX,2);
   }
   else { // exterior region with constant elevation angle
@@ -117,7 +119,7 @@ std::vector<double> FarrarField::GetB(double x, double y, double z) {
     Bxx = BX*exp(-rp/rX)*(rp/r);
   }
   
-  if (z<0) {
+  if (z_<0) {
     Bret[0] -= (Bxx*cosphi*cos(ThetaX));
     Bret[1] -= (Bxx*sinphi*cos(ThetaX));
   }

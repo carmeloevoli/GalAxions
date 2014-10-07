@@ -1,23 +1,24 @@
 ARCH = $(shell uname -s)
-CC = g++
+CC = icc # g++
 CFLAGS = -O3 -Wall -fno-common -fopenmp  
-HEALPIXDIR = /afs/desy.de/user/c/cevoli/x3dir/libs/Healpix_3.11
+HEALPIXDIR = #/afs/desy.de/user/c/cevoli/x3dir/libs/Healpix_3.11
 
-INCDIR=. -I$(CFITSIO_DIR)/include -I$(ROOTSYS)/include -I$(GSL_DIR)/include -I$(HEALPIXDIR)/include
+INCDIR=. -I$(CFITSIO_DIR)/include -I$(GSL_DIR)/include -I$(HEALPIXDIR)/include # -I$(ROOTSYS)/include 
 
-LIBS =-lm -L/phenod/x3/cevoli/libs -lg2c -lgfortran
+LIBS =-lm -L/phenod/data/cevoli/libs -lgfortran
 LIBS+=-L$(GSL_DIR)/lib -lgsl -lgslcblas
 LIBS+=-L$(CFITSIO_DIR)/lib -lcfitsio
-LIBS+=-L$(ROOTSYS)/lib -lCore -lCint -lRIO -lNet -lHist -lGraf -lGraf3d -lGpad -lTree -lRint -lPostscript -lMatrix -lPhysics -lMathCore -lThread -lpthread -ldl
+#LIBS+=-L$(ROOTSYS)/lib -lCore -lCint -lRIO -lNet -lHist -lGraf -lGraf3d -lGpad -lTree -lRint -lPostscript -lMatrix -lPhysics -lMathCore -lThread -lpthread -ldl
+#LIBS+=$(HEALPIXDIR)/lib/libchealpix.a 
 
-EXEC  = galaxions.out	
+EXEC  = galAxions.exe	
 OBJS  = $(patsubst %.cpp,%.o,$(wildcard *.cpp))
 INCS  = $(wildcard *.h)	
 
 $(EXEC): $(OBJS)
-	$(CC) $(CFLAGS) -o $@ $^ $(HEALPIXDIR)/lib/libchealpix.a $(LIBS) 
+	$(CC) $(CFLAGS) -o $@ $^ $(LIBS) 
 
-%.o: %.cc $(INCS)
+%.o: %.cpp $(INCS)
 	$(CC) $(CFLAGS) -I$(INCDIR) -c -o $@ $<
 
 clean:
