@@ -1,22 +1,26 @@
 ARCH = $(shell uname -s)
 CC = icc # g++
 CFLAGS = -O3 -Wall -fno-common -fopenmp  
-HEALPIXDIR = #/afs/desy.de/user/c/cevoli/x3dir/libs/Healpix_3.11
+HEALPIXDIR = /phenod/data/cevoli/libs/Healpix_3.11
 
-INCDIR=. -I$(CFITSIO_DIR)/include -I$(GSL_DIR)/include -I$(HEALPIXDIR)/include # -I$(ROOTSYS)/include 
+INCDIR=. -I$(CFITSIO_DIR)/include -I$(GSL_DIR)/include -I$(HEALPIXDIR)/include 
 
 LIBS =-lm -L/phenod/data/cevoli/libs -lgfortran
 LIBS+=-L$(GSL_DIR)/lib -lgsl -lgslcblas
 LIBS+=-L$(CFITSIO_DIR)/lib -lcfitsio
-#LIBS+=-L$(ROOTSYS)/lib -lCore -lCint -lRIO -lNet -lHist -lGraf -lGraf3d -lGpad -lTree -lRint -lPostscript -lMatrix -lPhysics -lMathCore -lThread -lpthread -ldl
-#LIBS+=$(HEALPIXDIR)/lib/libchealpix.a 
+LIBS+=$(HEALPIXDIR)/lib/libchealpix.a  
+#LIBS+=-L/phenod/data/cevoli/libs/Healpix_3.11/lib -lchealpix 
 
-EXEC  = galAxions.exe	
-OBJS  = $(patsubst %.cpp,%.o,$(wildcard *.cpp))
+
+EXEC  = galAxions.out	
+OBJS  = Farrar.o galaxions.o magnfield.o mymatrix.o Pshirkov.o solvers.o
 INCS  = $(wildcard *.h)	
 
-$(EXEC): $(OBJS)
+$(EXEC): main.o $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $^ $(LIBS) 
+
+calculateMaps.out: calculateMaps.o $(OBJS)
+	$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
 
 %.o: %.cpp $(INCS)
 	$(CC) $(CFLAGS) -I$(INCDIR) -c -o $@ $<

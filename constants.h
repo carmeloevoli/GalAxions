@@ -7,9 +7,6 @@ const double PiOver4 = PI/4.0;
 const double DegToRad = PI/180.0;
 const double RadToDeg = 180.0/PI;
 
-const bool iHealpix = true;
-const int resolution = 7;
-
 // PHYSICAL CONVERSIONS ******************************************************************
 
 const double cm2kpc = 1;

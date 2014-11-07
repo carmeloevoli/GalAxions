@@ -47,16 +47,12 @@ class galAxions{
   double PosAnglePDF;
   
   std::string initFilename;
-  //std::string rootFilename;
   std::string outputFilename;
   std::string galaxyFilename;
-  std::string probabilityMapFilename; // FITS file
-  std::string pdMapFilename; // FITS file
-  std::string paMapFilename; // FITS file
   
   std::ofstream outputStream;
   std::ofstream galaxyStream;
-
+  
   MagneticField * magneticField; // = NULL;
   Ferriere * gas;
   
@@ -81,12 +77,6 @@ class galAxions{
       outputFilename += ".txt";
       galaxyFilename = _initFilename;
       galaxyFilename += ".gal";
-      probabilityMapFilename = _initFilename;
-      probabilityMapFilename += ".fits";
-      pdMapFilename = _initFilename;
-      pdMapFilename += "_PD.fits"; 
-      paMapFilename = _initFilename;
-      paMapFilename += "_PA.fits";
       //magnfield = NULL;
       
       outputStream.open(outputFilename.c_str(), std::ofstream::out);
@@ -107,9 +97,10 @@ class galAxions{
   
   void createGasDensity(void);  
   void createMagneticField(const MagneticFieldType& btype_,const int& bmode_=ASS);
-  void createLos(const double&, const double&);
+  void createLos(const double&, const double&, const bool& printLos_=false);
   void printLos(const double&);
-  void calculateProbability(const unsigned int&,const double&,const double&,const bool&);
+  std::vector<double> calculateProbability(const unsigned int&,const double&,const double&,const bool&,const bool&);
+  std::vector<double> calculateProbability(const double&,const bool&,const bool&);
 };
 
 #endif

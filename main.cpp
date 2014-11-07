@@ -33,9 +33,9 @@ int main(int argc, char** argv)
   g->createGasDensity();
   
   g->createLos(279.6,-32.1); // SN1987A
-
-  //g->calculateProbability(2000,1e3*KEV,1e5*KEV,false);
-  g->calculateProbability(10000,1,300.0*MEV,false);
+  
+  g->calculateProbability(100,1.0*KEV,1e2*KEV,false,true);
+  //g->calculateProbability(10000,1,300.0*MEV,false); Payez Model
 
   if (g) delete g; 
   return 0;

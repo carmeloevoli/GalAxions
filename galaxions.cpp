@@ -10,7 +10,7 @@ void galAxions::createMagneticField(const MagneticFieldType& btype_,
     magneticField = new ConstantField(2.0);
   }
   else if ( btype_ == FARRAR ){
-    std::cout<<"#Init Farrar magnetic field!"<<std::endl;
+    //std::cout<<"#Init Farrar magnetic field!"<<std::endl;
     magneticField = new FarrarField();
   }
   else if ( btype_ == PSHIRKOV ){
@@ -23,7 +23,7 @@ void galAxions::createMagneticField(const MagneticFieldType& btype_,
 
 void galAxions::createGasDensity(void)
 {
-  std::cout<<"#Init gas!"<<std::endl;
+  //std::cout<<"#Init gas!"<<std::endl;
   gas = new Ferriere();
   
   return;
@@ -49,7 +49,8 @@ void galAxions::printLos(const double& rmax_)
 }
 
 void galAxions::createLos(const double& ldeg_, 
-			  const double& bdeg_)
+			  const double& bdeg_,
+			  const bool& printLos_)
 { 
   los.ldeg = ldeg_;
   los.bdeg = bdeg_;
@@ -151,7 +152,8 @@ void galAxions::createLos(const double& ldeg_,
   
   los.nSteps = los.distance.size();
 
-  printLos(10.0);
+  if ( printLos_ )
+    printLos(10.0);
  
   std::reverse(los.distance.begin(),los.distance.end());
   std::reverse(los.magneticFieldPerp.begin(),los.magneticFieldPerp.end());
@@ -164,17 +166,29 @@ void galAxions::createLos(const double& ldeg_,
   return;
 }
 
-void galAxions::calculateProbability(const unsigned int& nEnergy_,
+std::vector<double> galAxions::calculateProbability(const double& EnergyInEv_, // [eV]
+				     const bool& WithDamping_, 
+				     const bool& WriteOutput_)
+{
+  std::vector<double> output;
+  output = calculateProbability(1,EnergyInEv_,EnergyInEv_,WithDamping_,WriteOutput_);
+  return output;
+}
+
+std::vector<double> galAxions::calculateProbability(const unsigned int& nEnergy_,
 				     const double& EminInEv_, // [eV]
 				     const double& EmaxInEv_, // [eV]
-				     const bool& WithDamping_) // [eV]
+				     const bool& WithDamping_, 
+				     const bool& WriteOutput_)
 {
-  bool PRINT_SOLVER = true;
+  bool PRINT_SOLVER = false; //true;
   bool PRINT_AT_EACH_TIMESTEP = false; //true;
   
   time_t timeBegin, timeEnd;
 
   const int nDomains = los.distance.size();
+  
+  std::vector<double> output;
   
   time(&timeBegin);
 
@@ -205,6 +219,7 @@ void galAxions::calculateProbability(const unsigned int& nEnergy_,
     } // Initialization
     
     MyMatrix OldRho;
+
     OldRho(0,0) = std::complex<double>(0.0,0.0);
     OldRho(1,1) = std::complex<double>(0.0,0.0); // Photon unpolarized. Initial condition.
     OldRho(2,2) = std::complex<double>(1.0,0.0); // Full ALPs beam. Initial condition.
@@ -256,7 +271,16 @@ void galAxions::calculateProbability(const unsigned int& nEnergy_,
       std::cout<<"Coordinates: "<<los.ldeg<<" "<<los.bdeg<<std::endl;
     }
     
-    outputStream<<std::scientific<<EnergyInEv<<"\t"<<IavPDF<<"\t"<<PagPDF<<std::endl;
+    if ( WriteOutput_ ){
+      outputStream<<std::scientific<<EnergyInEv<<"\t"<<IavPDF<<"\t"<<PagPDF<<"\t";
+      outputStream<<real(Rho(0,0))<<"\t"<<real(Rho(1,1))<<"\t"<<real(Rho(2,2))<<"\t";
+      outputStream<<imag(Rho(0,0))<<"\t"<<imag(Rho(1,1))<<"\t"<<imag(Rho(2,2))<<"\t";
+      outputStream<<std::endl;
+    }
+
+    output.push_back(EnergyInEv);
+    output.push_back(IavPDF);
+    output.push_back(PagPDF);
     
     DeltaAgamma.clear();
     DeltaPl.clear();
@@ -268,6 +292,8 @@ void galAxions::calculateProbability(const unsigned int& nEnergy_,
 
   time(&timeEnd);
   
-  std::cout<<"Ended in "<<difftime(timeEnd,timeBegin)<<" seconds."<<std::endl;// in "<<tf-te<<" seconds."<<endl;
-  return;
+  if ( WriteOutput_ )
+    std::cout<<"Ended in "<<difftime(timeEnd,timeBegin)<<" seconds."<<std::endl;// in "<<tf-te<<" seconds."<<endl;
+
+  return output;
 }
