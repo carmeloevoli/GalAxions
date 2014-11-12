@@ -32,11 +32,12 @@ int main(int argc, char** argv)
   
   g->createGasDensity();
   
-  g->createLos(279.6,-32.1); // SN1987A
+  //g->createLos(279.6,-32.1,30); // SN1987A
+  g->createLos(0.01,0.01,10); // GC
   
-  g->calculateProbability(100,1.0*KEV,1e2*KEV,false,true);
-  //g->calculateProbability(10000,1,300.0*MEV,false); Payez Model
-
+  //g->calculateProbability(100,1.0*KEV,1e2*KEV,false,true);
+  g->calculateProbability(2000,1.0*MEV,100.0*MEV,false,true); // Payez Model
+  
   if (g) delete g; 
   return 0;
 }

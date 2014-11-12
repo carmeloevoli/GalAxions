@@ -50,7 +50,8 @@ void galAxions::printLos(const double& rmax_)
 
 void galAxions::createLos(const double& ldeg_, 
 			  const double& bdeg_,
-			  const bool& printLos_)
+			  const double& maxDistance_,
+			  const bool& doPrintLos_)
 { 
   los.ldeg = ldeg_;
   los.bdeg = bdeg_;
@@ -85,7 +86,10 @@ void galAxions::createLos(const double& ldeg_,
   std::vector<double> Bperp;
   std::vector<double> Btotal, Btest;
   
-  while ( fabs(xGalactoCentric) < xmax && fabs(yGalactoCentric) < ymax && fabs(zGalactoCentric) < zmax ){
+  while ( fabs(xGalactoCentric) < xmax 
+	  && fabs(yGalactoCentric) < ymax 
+	  && fabs(zGalactoCentric) < zmax 
+	  && distanceAlongLos < maxDistance_ ){
     
     distanceAlongLos += ds; // [kpc]
     
@@ -152,7 +156,7 @@ void galAxions::createLos(const double& ldeg_,
   
   los.nSteps = los.distance.size();
 
-  if ( printLos_ )
+  if ( doPrintLos_ )
     printLos(10.0);
  
   std::reverse(los.distance.begin(),los.distance.end());
@@ -191,14 +195,21 @@ std::vector<double> galAxions::calculateProbability(const unsigned int& nEnergy_
   std::vector<double> output;
   
   time(&timeBegin);
-
+  
+//#ifdef _OPENMP
+//#pragma omp parallel for ordered schedule(dynamic) default(shared)
+//#endif
   for ( unsigned int iE = 0; iE < nEnergy_; iE++ ){
     
-    const double EnergyInEv = ( nEnergy_ == 1 ) ? EminInEv_ : pow(10, log10(EminInEv_)+double(iE)/double(nEnergy_-1)*log10(EmaxInEv_/EminInEv_)); 
+    const double EnergyInEv = ( nEnergy_ == 1 ) 
+      ? EminInEv_ 
+      : pow(10, log10(EminInEv_)+double(iE)/double(nEnergy_-1)*log10(EmaxInEv_/EminInEv_)); 
     
     const double x = EnergyInEv/15.4;
     
-    const double XsecH2 = (WithDamping_) ? 45.57e-24*(1.0-2.003*pow(x,-0.5) -4/806/x+50.577*pow(x,-1.5)-171.044*pow(x,-2)+231.608*pow(x,-2.5)-81.885*pow(x,-3))/pow(EnergyInEv/1e3,3.5) : 0.0; // CHECK DIMENSION!
+    const double XsecH2 = (WithDamping_) 
+      ? 45.57e-24*(1.0-2.003*pow(x,-0.5)-4./806./x+50.577*pow(x,-1.5)-171.044*pow(x,-2)+231.608*pow(x,-2.5)-81.885*pow(x,-3))/pow(EnergyInEv/1e3,3.5) 
+      : 0.0; // CHECK DIMENSION!
     
     const double XsecHI = (WithDamping_) ? XsecH2/2.833 : 0.0; // CHECK DIMENSION!
     
@@ -273,8 +284,8 @@ std::vector<double> galAxions::calculateProbability(const unsigned int& nEnergy_
     
     if ( WriteOutput_ ){
       outputStream<<std::scientific<<EnergyInEv<<"\t"<<IavPDF<<"\t"<<PagPDF<<"\t";
-      outputStream<<real(Rho(0,0))<<"\t"<<real(Rho(1,1))<<"\t"<<real(Rho(2,2))<<"\t";
-      outputStream<<imag(Rho(0,0))<<"\t"<<imag(Rho(1,1))<<"\t"<<imag(Rho(2,2))<<"\t";
+      //outputStream<<real(Rho(0,0))<<"\t"<<real(Rho(1,1))<<"\t"<<real(Rho(2,2))<<"\t";
+      //outputStream<<imag(Rho(0,0))<<"\t"<<imag(Rho(1,1))<<"\t"<<imag(Rho(2,2))<<"\t";
       outputStream<<std::endl;
     }
 

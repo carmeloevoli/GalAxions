@@ -9,6 +9,10 @@
 #include <string>
 #include <complex>
 
+#ifdef _OPENMP
+#include <omp.h>
+#endif
+
 #include "gas.h"
 #include "magnfield.h"
 #include "Farrar.h"
@@ -97,7 +101,7 @@ class galAxions{
   
   void createGasDensity(void);  
   void createMagneticField(const MagneticFieldType& btype_,const int& bmode_=ASS);
-  void createLos(const double&, const double&, const bool& printLos_=false);
+  void createLos(const double&,const double&,const double&,const bool& printLos_=false);
   void printLos(const double&);
   std::vector<double> calculateProbability(const unsigned int&,const double&,const double&,const bool&,const bool&);
   std::vector<double> calculateProbability(const double&,const bool&,const bool&);
