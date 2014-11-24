@@ -36,7 +36,8 @@ int main(int argc, char** argv)
   g->createLos(0.01,0.01,10); // GC
   
   //g->calculateProbability(100,1.0*KEV,1e2*KEV,false,true);
-  g->calculateProbability(2000,1.0*MEV,100.0*MEV,false,true); // Payez Model
+  //g->calculateProbability(2000,1.0*MEV,100.0*MEV,false,true); // Payez Model
+  g->calculateProbability(2000,1.0*MEV,300.0*MEV,false,true); // Payez Model GC
   
   if (g) delete g; 
   return 0;
