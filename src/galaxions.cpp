@@ -29,7 +29,7 @@ void galAxions::printLos(const double& rmax_) {
 	galaxyStream << std::scientific << std::setprecision(5);
 	for (size_t i = 0; i < los.nSteps; i++) {
 		if (los.distance[i] < rmax_) {
-			galaxyStream << los.distance[i] << "\t";
+			galaxyStream << los.distance[i] / kpc << "\t";
 			galaxyStream << los.magneticFieldPerp[i] << "\t";
 			galaxyStream << los.magneticFieldTotal[i] << "\t";
 			galaxyStream << los.psik[i] << "\t";
@@ -121,11 +121,8 @@ void galAxions::createLos(const double& ldeg_, const double& bdeg_, const double
 			testpsik = 0.0;
 
 		los.psik.push_back(testpsik);
-		los.distance.push_back(distanceAlongLos);  // [kpc]
-
-		double rGalactoCentric = std::sqrt(xGalactoCentric * xGalactoCentric + yGalactoCentric * yGalactoCentric);
-
-		los.electronDensity.push_back(gas->get(rGalactoCentric, zGalactoCentric));
+		los.distance.push_back(distanceAlongLos);
+		los.electronDensity.push_back(gas->get(xGalactoCentric, yGalactoCentric, zGalactoCentric));
 	}
 
 	los.nSteps = los.distance.size();
