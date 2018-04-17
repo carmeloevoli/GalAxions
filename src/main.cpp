@@ -23,7 +23,7 @@ int main(int argc, char** argv) {
 
 	g->createMagneticField(FARRAR); // Alternative models: PSHIRKOV, CONSTANT
 	g->createGasDensity(FERRIERE);
-	g->createLos(338.32, -0.02, 8.6); // HESS J1640-465
+	g->createLos(l_los, b_los);
 	g->printLos(10 * kpc);
 
 	//g->calculateProbability(100,1.0*KEV,1e2*KEV,false,true);
