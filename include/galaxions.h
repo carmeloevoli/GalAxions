@@ -26,7 +26,7 @@ enum MagneticFieldType {
 };
 
 enum GasDensityType {
-	FERRIERE, NE2001
+	FERRIERE, CORDES, YMW
 };
 
 struct LOS {

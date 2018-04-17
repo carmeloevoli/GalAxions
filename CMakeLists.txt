@@ -1,12 +1,17 @@
 project(GALAXIONS CXX)
 cmake_minimum_required(VERSION 2.8)
 
-set( CMAKE_VERBOSE_MAKEFILE off )
-set( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" )
-set( CMAKE_CXX_COMPILER "g++" )
-set( CMAKE_CXX_FLAGS "-O2 -ftree-vectorize -std=c++11 -ferror-limit=3" )
-set( GALAXIONS_INCLUDES )
-set( GALAXIONS_LIBRARIES )
+set(CMAKE_VERBOSE_MAKEFILE off)
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+set(CMAKE_CXX_COMPILER "g++")
+set(CMAKE_CXX_FLAGS "-O2 -ftree-vectorize -std=c++11 -ferror-limit=3")
+set(GALAXIONS_INCLUDES)
+set(GALAXIONS_LIBRARIES)
+
+# YMW16 code (provided)
+add_subdirectory(libs/ymw16)
+list(APPEND GALAXIONS_LIBRARIES ymw16) 
+list(APPEND GALAXIONS_INCLUDES libs/ymw16)
 
 # include
 include_directories( "${CMAKE_SOURCE_DIR}/include" )

@@ -17,8 +17,14 @@ void galAxions::createMagneticField(const MagneticFieldType& btype_, const int& 
 
 void galAxions::createGasDensity(const GasDensityType& gastype_) {
 	if (gastype_ == FERRIERE) {
-		std::cout << "# init Ferriere gas" << std::endl;
-		gas = std::make_shared<Ferriere>();
+		std::cout << "# init Ferriere gas\n";
+		gas = std::make_shared<Ferriere07>();
+	} else if (gastype_ == CORDES) {
+		std::cout << "# init Cordes gas\n";
+		gas = std::make_shared<Cordes91>();
+	} else if (gastype_ == YMW) {
+		std::cout << "# init YMW gas\n";
+		gas = std::make_shared<YMW16>();
 	} else {
 		std::cerr << "Gas Density model not found!\n";
 	}

@@ -6,6 +6,9 @@
 #define pow3(A) ((A)*(A)*(A))
 #define pow4(A) ((A)*(A)*(A)*(A))
 #define pow5(A) ((A)*(A)*(A)*(A)*(A))
+#define sech(A) (1.0 / std::cosh(A))
+#define sech2(A) (1.0 / std::cosh(A) / std::cosh(A))
+#define deg2rad(A) (A * M_PI / 180.0)
 
 // MKS units
 static const double meter = 1;

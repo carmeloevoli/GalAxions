@@ -6,11 +6,11 @@
 class healpixMap{
  private:
   
-  unsigned long healpixResolution;
-  unsigned long nside;
-  unsigned long npix;
+  unsigned long healpixResolution = 0;
+  unsigned long nside = 0;
+  unsigned long npix = 0;
   
-  double resolutionInDegree;
+  double resolutionInDegree = 0;
 
   std::string probabilityMapFilename; // FITS file
   std::string pdMapFilename; // FITS file
