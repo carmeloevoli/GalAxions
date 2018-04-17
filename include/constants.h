@@ -1,35 +1,31 @@
 #ifndef __CONSTANTS_H
 #define __CONSTANTS_H
 
-const double PI =  3.14159265358979323846; 
-const double PiOver2 = PI/2.0;
-const double PiOver4 = PI/4.0;
-const double DegToRad = PI/180.0;
-const double RadToDeg = 180.0/PI;
+#include "mks.h"
 
-// PHYSICAL CONVERSIONS ******************************************************************
+// ANGLE CONSTANTS
 
-const double cm2kpc = 1;
-const double cmInverse2kpcInverse = 3.06e21;
-const double MpcInverse2kpcInverse = 1e-3;
-const double kpc2cm = 3.085677580e21;
-const double muG2nG = 1e3;
+const double PI = M_PI;
+const double PiOver2 = PI / 2.0;
+const double PiOver4 = PI / 4.0;
+const double DegToRad = PI / 180.0;
+const double RadToDeg = 180.0 / PI;
 
-// CONSTANTS FOR THE GALAXY ************************************************************
+// LOS CONSTANTS
 
-const double rSun = 8.5;          // [kpc] Sun radial position
-const double xSun = -8.5;         // [kpc]
-const double ySun = 0;            // [kpc]
-const double zSun = 0.;           // [kpc] 
-const double ds   = 0.001;        // [kpc] Step size 
-const double xmin = -30;          // [kpc] 
-const double xmax = 30;           // [kpc] 
-const double ymin = -30;          // [kpc] 
-const double ymax = 30;           // [kpc] 
-const double zmin = -30;          // [kpc] 
-const double zmax = 30;           // [kpc] 
+const double sun_r = 8.5 * kpc;
+const double sun_x = -8.5 * kpc;
+const double sun_y = 0;
+const double sun_z = 0.;
+const double step_size = 0.001 * kpc;
+const double x_max = 30 * kpc;
+const double x_min = -x_max;
+const double y_max = 30 * kpc;
+const double y_min = -y_max;
+const double z_max = 30. * kpc;
+const double z_min = -z_max;
 
-// CONSTANTS FOR THE GRID ******************************************************
+// MAP CONSTANTS
 
 const double maxlong = 180.0;
 const double minlong = -180.0;
@@ -37,9 +33,5 @@ const double maxlat = 89.75;
 const double minlat = -89.75;
 const int nlong = 361;
 const int nlat = 360;
-
-// *************************************************************************************
-
-inline double sgn(double a) { return (a>=0)-(a<0); }
 
 #endif
