@@ -1,5 +1,8 @@
-output
-fits
-sh
-testRuns
-*.out
+# COMPILING FILES
+build/ 
+
+# ECLIPSE
+.cproject
+.project
+.settings/
+
