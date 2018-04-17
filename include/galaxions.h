@@ -15,9 +15,11 @@
 #endif
 
 #include "gas.h"
-#include "magnfield.h"
+#include "Ferriere07.h"
+#include "magneticfield.h"
 #include "Farrar.h"
 #include "Pshirkov.h"
+#include "JF12.h"
 #include "mymatrix.h"
 #include "solvers.h"
 
@@ -94,6 +96,8 @@ public:
 	void createLos(const double& ldeg_, const double& bdeg_, const double& maxDistance_ = 30 * kpc);
 
 	void printLos(const double&);
+
+	void reverseLos();
 
 	std::vector<double> calculateProbability(const unsigned int&, const double&, const double&, const bool&, const bool&);
 
