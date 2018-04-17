@@ -1,6 +1,7 @@
 #ifndef __GAS_DISTRIBUTION_H
 #define __GAS_DISTRIBUTION_H
 
+#include <algorithm>
 #include <cmath>
 #include "constants.h"
 
@@ -47,7 +48,7 @@ public:
 
 	double get(const double& x, const double& y, const double& z) const override {
 		double r = std::sqrt(x * x + y * y);
-		return disk(r, z) + bulge(x, y, z);
+		return std::max(disk(r, z) + bulge(x, y, z), 0.);
 	}
 };
 
@@ -76,11 +77,5 @@ public:
 		return 0;
 	}
 };
-
-/*double HII_Ferriere07::get(const Vector3d& pos) const {
- auto pos_pc = pos / pc;
- return gas.density(pos_pc.x, pos_pc.y, pos_pc.z) / cm3;
- }
- */
 
 #endif
