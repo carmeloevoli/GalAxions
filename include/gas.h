@@ -14,44 +14,6 @@ public:
 	virtual double get(const double& x, const double& y, const double& z) const = 0;
 };
 
-class Ferriere07: public ElectronModel {
-private:
-	double L1 = 17000;
-	double H1 = 950;
-	double L2 = 3700;
-	double H2 = 140;
-	double L3 = 145;
-	double H3 = 26;
-	double Lvh = 162;
-	double Hvh = 90;
-	double alphavh = deg2rad(21.);
-	double cos_alphavh = std::cos(alphavh);
-	double sin_alphavh = std::sin(alphavh);
-	double wim(double x, double y, double z) const;
-	double vhim(double x, double y, double z) const;
-	double him(double x, double y, double z) const;
-public:
-	double disk(const double& r, const double& z) const {
-		double value = 2.13e-2 / cm3;
-		value *= std::exp(-(r - sun_r) / (18.24 * kpc));
-		value *= std::min(1.0, std::exp((fabs(z) - 1.0 * kpc) / (0.5 * kpc)));
-		return value;
-	}
-
-	double bulge(const double& x, const double& y, const double& z) const {
-		double value = 0;
-		value += wim(x / pc, y / pc, z / pc);
-		value += vhim(x / pc, y / pc, z / pc);
-		value += him(x / pc, y / pc, z / pc);
-		return value / cm3;
-	}
-
-	double get(const double& x, const double& y, const double& z) const override {
-		double r = std::sqrt(x * x + y * y);
-		return std::max(disk(r, z) + bulge(x, y, z), 0.);
-	}
-};
-
 class Cordes91: public ElectronModel {
 private:
 	double fne1 = 0.025 / cm3;
