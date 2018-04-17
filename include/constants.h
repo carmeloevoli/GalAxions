@@ -19,11 +19,8 @@ const double sun_y = 0;
 const double sun_z = 0.;
 const double step_size = 0.001 * kpc;
 const double x_max = 30 * kpc;
-const double x_min = -x_max;
 const double y_max = 30 * kpc;
-const double y_min = -y_max;
 const double z_max = 30. * kpc;
-const double z_min = -z_max;
 
 // MAP CONSTANTS
 
