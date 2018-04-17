@@ -9,9 +9,9 @@ set(GALAXIONS_INCLUDES)
 set(GALAXIONS_LIBRARIES)
 
 # YMW16 code (provided)
-add_subdirectory(libs/ymw16)
-list(APPEND GALAXIONS_LIBRARIES ymw16) 
-list(APPEND GALAXIONS_INCLUDES libs/ymw16)
+#add_subdirectory(libs/ymw16)
+#list(APPEND GALAXIONS_LIBRARIES ymw16) 
+#list(APPEND GALAXIONS_INCLUDES libs/ymw16)
 
 # include
 include_directories( "${CMAKE_SOURCE_DIR}/include" )
@@ -20,6 +20,7 @@ include_directories( "${CMAKE_SOURCE_DIR}/include" )
 set( GALAXIONS_SRCS
      src/Farrar.cpp
      src/Pshirkov.cpp
+     src/Ferriere07.cpp
      src/galaxions.cpp
      src/magnfield.cpp
      src/mymatrix.cpp
