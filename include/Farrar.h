@@ -2,7 +2,7 @@
 #define __FeLine_farrar_h
 
 #include <cmath>
-#include "magnfield.h"
+#include "magneticfield.h"
 
 class FarrarField : public MagneticField {
   

@@ -4,7 +4,7 @@
 #include <cmath>
 #include <vector>
 #include <cstdlib>
-#include "magnfield.h"
+#include "magneticfield.h"
 #include "constants.h"
 
 #define ASS 0
