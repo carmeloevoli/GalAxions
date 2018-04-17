@@ -6,7 +6,7 @@ void galAxions::createMagneticField(const MagneticFieldType& btype_, const int& 
 		magneticField = std::make_shared<ConstantField>(2.0);
 	} else if (btype_ == FARRAR) {
 		std::cout << "# init Farrar magnetic field!" << std::endl;
-		magneticField = std::make_shared<FarrarField>();
+		magneticField = std::make_shared<JF12Field>();
 	} else if (btype_ == PSHIRKOV) {
 		std::cout << "# init Pshirkov magnetic field!" << std::endl;
 		magneticField = std::make_shared<PshirkovField>(bmode_, 0.0, 8.5, 2.0);
@@ -34,7 +34,7 @@ void galAxions::createGasDensity(const GasDensityType& gastype_) {
 void galAxions::printLos(const double& rmax_) {
 	galaxyStream << "d [kpc] - B perp [] - B tot [] - psi_k - n_e [cm-3]\n";
 	galaxyStream << std::scientific << std::setprecision(5);
-	for (size_t i = 0; i < los.nSteps; i++) {
+	for (size_t i = los.nSteps - 1; i > 0; --i) {
 		if (los.distance[i] < rmax_) {
 			galaxyStream << los.distance[i] / kpc << "\t";
 			galaxyStream << los.magneticFieldPerp[i] << "\t";
@@ -83,7 +83,6 @@ void galAxions::createLos(const double& ldeg_, const double& bdeg_, const double
 			xGalactoCentric = sun_x + distanceAlongLos * cosbcosl;
 		else
 			xGalactoCentric = sun_x - distanceAlongLos * cosbcosl;
-
 		yGalactoCentric = distanceAlongLos * cosbsinl;
 		zGalactoCentric = distanceAlongLos * sinb;
 
@@ -93,6 +92,8 @@ void galAxions::createLos(const double& ldeg_, const double& bdeg_, const double
 		Bperp.clear();
 		Bperp = magneticField->GetBperp(xGalactoCentric, yGalactoCentric, zGalactoCentric); // [muG]
 		Btotal = magneticField->GetB(xGalactoCentric, yGalactoCentric, zGalactoCentric); // [muG]
+
+		std::cout << normVector(Bperp) << " " << normVector(Btotal) << "\t";
 
 		los.magneticFieldPerp.push_back(normVector(Bperp));
 		los.magneticFieldTotal.push_back(normVector(Btotal));
@@ -124,7 +125,10 @@ void galAxions::createLos(const double& ldeg_, const double& bdeg_, const double
 	}
 
 	los.nSteps = los.distance.size();
+	reverseLos();
+}
 
+void galAxions::reverseLos() {
 	std::reverse(los.distance.begin(), los.distance.end());
 	std::reverse(los.magneticFieldPerp.begin(), los.magneticFieldPerp.end());
 	std::reverse(los.magneticFieldTotal.begin(), los.magneticFieldTotal.end());
