@@ -1,6 +1,8 @@
 #ifndef INCLUDE_MKS_H_
 #define INCLUDE_MKS_H_
 
+//TODO convert to cgs
+
 #include <cmath>
 #define pow2(A) ((A)*(A))
 #define pow3(A) ((A)*(A)*(A))

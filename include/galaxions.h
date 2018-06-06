@@ -18,6 +18,7 @@
 #include "Ferriere07.h"
 #include "magneticfield.h"
 #include "Farrar.h"
+#include "los.h"
 #include "Pshirkov.h"
 #include "JF12.h"
 #include "mymatrix.h"
@@ -31,62 +32,42 @@ enum GasDensityType {
 	FERRIERE, CORDES, YMW
 };
 
-struct LOS {
-	double l;
-	double ldeg;
-	double b;
-	double bdeg;
-	int nSteps;
-	std::vector<double> magneticFieldPerp;
-	std::vector<double> magneticFieldTotal;
-	std::vector<double> distance;
-	std::vector<double> psik;
-	std::vector<double> electronDensity;
-};
-
 class galAxions {
 private:
 
 	double axionMass;
 	double gag;
 
-	std::string outputFilename;
-	std::string losFilename;
-	std::ofstream outputStream;
-	std::ofstream galaxyStream;
+	std::string output_filename;
+	std::ofstream output_ss;
 
-	std::shared_ptr<MagneticField> magneticField;
+	std::string los_filename;
+	std::ofstream los_ss;
+
+	std::shared_ptr<MagneticField> magnetic_field;
 	std::shared_ptr<ElectronModel> gas;
 
 	LOS los;
 
-	/*double PagPDF;
-	 double IavPDF;
-	 double QavPDF;
-	 double UavPDF;
-	 double VavPDF;
-	 double PolDegPDF;
-	 double PosAnglePDF;
-	 */
-	/*std::vector<double> DeltaAgamma;
-	 std::vector<double> DeltaPl;
-	 std::vector<double> DeltaQED;
-	 std::vector<double> DeltaPar;
-	 std::vector<double> DeltaPerp;*/
+	std::vector<double> Delta_agamma;
+	std::vector<double> Delta_pl;
+	std::vector<double> Delta_QED;
+	std::vector<double> Delta_par;
+	std::vector<double> Delta_perp;
 
 public:
 
-	galAxions(const double& axionMass_, const double& gag_, const std::string& initFilename_) :
+	galAxions(const double& axionMass_, const double& gag_, const std::string& filename_) :
 			axionMass(axionMass_), gag(gag_) {
-		outputFilename = initFilename_ + ".txt";
-		losFilename = initFilename_ + ".los";
-		outputStream.open(outputFilename.c_str(), std::ofstream::out);
-		galaxyStream.open(losFilename.c_str(), std::ofstream::out);
+		output_filename = filename_ + ".txt";
+		los_filename = filename_ + ".los";
+		output_ss.open(output_filename.c_str(), std::ofstream::out);
+		los_ss.open(los_filename.c_str(), std::ofstream::out);
 	}
 
 	~galAxions() {
-		outputStream.close();
-		galaxyStream.close();
+		output_ss.close();
+		los_ss.close();
 	}
 
 	void createGasDensity(const GasDensityType& gastype_);
@@ -99,9 +80,7 @@ public:
 
 	void reverseLos();
 
-	std::vector<double> calculateProbability(const unsigned int&, const double&, const double&, const bool&, const bool&);
-
-	std::vector<double> calculateProbability(const double&, const bool&, const bool&);
+	void calculateProbability(const size_t& nEnergy_, const double& Emin_, const double& Emax_, const bool& do_damping_, const bool& do_output_ = true);
 };
 
 #endif

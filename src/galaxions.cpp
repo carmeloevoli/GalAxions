@@ -1,15 +1,17 @@
 #include "galaxions.h"
 
+#define ALMOST_ONE 0.9999999999
+
 void galAxions::createMagneticField(const MagneticFieldType& btype_, const int& bmode_) {
 	if (btype_ == CONSTANT) {
 		std::cout << "# init constant magnetic field!" << std::endl;
-		magneticField = std::make_shared<ConstantField>(2.0);
+		magnetic_field = std::make_shared<ConstantField>(2.0);
 	} else if (btype_ == FARRAR) {
 		std::cout << "# init Farrar magnetic field!" << std::endl;
-		magneticField = std::make_shared<JF12Field>();
+		magnetic_field = std::make_shared<JF12Field>();
 	} else if (btype_ == PSHIRKOV) {
 		std::cout << "# init Pshirkov magnetic field!" << std::endl;
-		magneticField = std::make_shared<PshirkovField>(bmode_, 0.0, 8.5, 2.0);
+		magnetic_field = std::make_shared<PshirkovField>(bmode_, 0.0, 8.5, 2.0);
 	} else {
 		std::cerr << "Magnetic Field model not found!\n";
 	}
@@ -32,106 +34,170 @@ void galAxions::createGasDensity(const GasDensityType& gastype_) {
 }
 
 void galAxions::printLos(const double& rmax_) {
-	galaxyStream << "d [kpc] - B perp [] - B tot [] - psi_k - n_e [cm-3]\n";
-	galaxyStream << std::scientific << std::setprecision(5);
-	for (size_t i = los.nSteps - 1; i > 0; --i) {
-		if (los.distance[i] < rmax_) {
-			galaxyStream << los.distance[i] / kpc << "\t";
-			galaxyStream << los.magneticFieldPerp[i] << "\t";
-			galaxyStream << los.magneticFieldTotal[i] << "\t";
-			galaxyStream << los.psik[i] << "\t";
-			galaxyStream << los.electronDensity[i] * cm3 << "\t";
-			galaxyStream << std::endl;
+	std::cout << "# write los in " << los_filename << "\n";
+
+	los_ss << "# d [kpc] - B perp [muG] - B tot [muG] - psi_k - n_e [cm-3]\n";
+	los_ss << std::scientific << std::setprecision(5);
+	for (size_t i = los.domains.size() - 1; i > 0; --i) {
+		if (los.domains.at(i).distance < rmax_) {
+			los_ss << los.domains.at(i).distance / kpc << "\t";
+			los_ss << los.domains.at(i).magnetic_field_perp / muG << "\t";
+			los_ss << los.domains.at(i).magnetic_field_total / muG << "\t";
+			los_ss << los.domains.at(i).psik << "\t";
+			los_ss << los.domains.at(i).electron_density * cm3 << "\t";
+			los_ss << std::endl;
 		}
 	}
+}
+
+double get_psik(const std::vector<double>& ref_direction, const std::vector<double>& B_perp) {
+	double test_psik = 0; // the angle between B_transverse and y axis
+	auto B_perp_norm = normVector(B_perp);
+	if (B_perp_norm != 0) {
+		double cosarg = (ref_direction[0] * B_perp[0] + ref_direction[1] * B_perp[1] + ref_direction[2] * B_perp[2]) / B_perp_norm;
+		if (cosarg >= ALMOST_ONE)
+			test_psik = 0.0;
+		else if (cosarg <= -ALMOST_ONE)
+			test_psik = M_PI;
+		else
+			test_psik = std::acos(cosarg);
+	} else {
+		test_psik = 0.0;
+	}
+	return test_psik;
 }
 
 void galAxions::createLos(const double& ldeg_, const double& bdeg_, const double& maxDistance_) {
-	los.ldeg = ldeg_;
-	los.bdeg = bdeg_;
+	std::cout << "# create los along l : " << ldeg_ << " and b : " << bdeg_ << "\n";
 
-	los.l = los.ldeg * DegToRad; // \phi in [0,2\pi]
-	//los.b = (bdeg < 0) ? (90.0-bdeg)*DegToRad : -1; // \theta in [0,\pi]
-	los.b = los.bdeg * DegToRad;
+	los = LOS(ldeg_, bdeg_);
 
-	double sinl = sin(los.l);
-	double cosl = cos(los.l);
+	double distance_along_los = 0.0;
+	double x_galaxy = 0.0;
+	double y_galaxy = 0.0;
+	double z_galaxy = 0.0;
 
-	double sinb = sin(los.b);
-	double cosb = cos(los.b);
-
-	double cosbcosl = cosb * cosl;
-	double cosbsinl = cosb * sinl;
-
-	double distanceAlongLos = 0.0;
-	double xGalactoCentric = 0.0;
-	double yGalactoCentric = 0.0;
-	double zGalactoCentric = 0.0;
-
-	std::vector<double> ydir;
+	std::vector<double> ref_direction;
 
 	bool done = false;
 
-	std::vector<double> Bperp;
-	std::vector<double> Btotal;
+	while (fabs(x_galaxy) < x_max && fabs(y_galaxy) < y_max && fabs(z_galaxy) < z_max && distance_along_los < maxDistance_) {
 
-	while (fabs(xGalactoCentric) < x_max && fabs(yGalactoCentric) < y_max && fabs(zGalactoCentric) < z_max && distanceAlongLos < maxDistance_) {
-
-		distanceAlongLos += step_size;
+		distance_along_los += step_size;
 
 		if (sun_x < 0)
-			xGalactoCentric = sun_x + distanceAlongLos * cosbcosl;
+			x_galaxy = sun_x + distance_along_los * los.cos_b_cos_l;
 		else
-			xGalactoCentric = sun_x - distanceAlongLos * cosbcosl;
-		yGalactoCentric = distanceAlongLos * cosbsinl;
-		zGalactoCentric = distanceAlongLos * sinb;
+			x_galaxy = sun_x - distance_along_los * los.cos_b_cos_l;
+		y_galaxy = distance_along_los * los.cos_b_sin_l;
+		z_galaxy = distance_along_los * los.sin_b;
 
-		los.distance.push_back(distanceAlongLos);
-		los.electronDensity.push_back(gas->get(xGalactoCentric, yGalactoCentric, zGalactoCentric));
-
-		Bperp.clear();
-		Bperp = magneticField->GetBperp(xGalactoCentric, yGalactoCentric, zGalactoCentric); // [muG]
-		Btotal = magneticField->GetB(xGalactoCentric, yGalactoCentric, zGalactoCentric); // [muG]
-
-		std::cout << normVector(Bperp) << " " << normVector(Btotal) << "\t";
-
-		los.magneticFieldPerp.push_back(normVector(Bperp));
-		los.magneticFieldTotal.push_back(normVector(Btotal));
-
-		double cosarg = 0;
-		double testpsik = 0; // the angle between Btransverse and y axis
+		auto B_perp = magnetic_field->GetBperp(x_galaxy, y_galaxy, z_galaxy);
+		auto B_perp_norm = normVector(B_perp);
+		auto B_total = magnetic_field->GetB(x_galaxy, y_galaxy, z_galaxy);
+		auto n_e = gas->get(x_galaxy, y_galaxy, z_galaxy);
 
 		if (!done) { // Fix once the reference direction
 			done = true;
-
-			ydir = Bperp;
-			ydir[0] /= los.magneticFieldPerp.back();
-			ydir[1] /= los.magneticFieldPerp.back();
-			ydir[2] /= los.magneticFieldPerp.back();
+			ref_direction = B_perp;
+			ref_direction[0] /= B_perp_norm;
+			ref_direction[1] /= B_perp_norm;
+			ref_direction[2] /= B_perp_norm;
 		}
 
-		if (los.magneticFieldPerp.back() != 0) {
-			cosarg = (ydir[0] * Bperp[0] + ydir[1] * Bperp[1] + ydir[2] * Bperp[2]) / los.magneticFieldPerp.back();
-			if (cosarg >= 0.99999999999)
-				testpsik = 0.0;
-			else if (cosarg <= -0.99999999999)
-				testpsik = PI;
-			else
-				testpsik = acos(cosarg);
-		} else
-			testpsik = 0.0;
+		domain d = { B_perp_norm, normVector(B_total), distance_along_los, get_psik(ref_direction, B_perp), n_e, 0, 0 };
 
-		los.psik.push_back(testpsik);
+		los.domains.push_back(d);
 	}
 
-	los.nSteps = los.distance.size();
-	reverseLos();
+	std::reverse(los.domains.begin(), los.domains.end());
 }
 
-void galAxions::reverseLos() {
-	std::reverse(los.distance.begin(), los.distance.end());
-	std::reverse(los.magneticFieldPerp.begin(), los.magneticFieldPerp.end());
-	std::reverse(los.magneticFieldTotal.begin(), los.magneticFieldTotal.end());
-	std::reverse(los.psik.begin(), los.psik.end());
-	std::reverse(los.electronDensity.begin(), los.electronDensity.end());
+void galAxions::calculateProbability(const size_t& nEnergy_, const double& Emin_, const double& Emax_, const bool& do_damping_, const bool& do_output_) {
+
+	time_t timeBegin, timeEnd;
+
+	const int nDomains = los.domains.size();
+
+	time(&timeBegin);
+
+#ifdef _OPENMP
+#pragma omp parallel for ordered schedule(dynamic) default(shared)
+#endif
+	for (size_t iE = 0; iE < nEnergy_; iE++) {
+
+		const double Energy = (nEnergy_ == 1) ? Emin_ : pow(10, log10(Emin_) + double(iE) / double(nEnergy_ - 1) * log10(Emax_ / Emin_));
+
+		const double Xsec_H2 = 0;
+		const double Xsec_HI = 0;
+
+		const double gag_norm = gag / (5e-11 / GeV);
+		const double axion_mass_norm = axionMass / (1e-8 * eV);
+		const double Energy_norm = Energy / TeV;
+		const double Delta_a_kpc = -7.8e-3 * pow2(axion_mass_norm) / Energy_norm;
+
+		for (size_t i = 0; i < nDomains; i++) {
+			double B_T_norm = los.domains.at(i).magnetic_field_perp / muG;
+			double n_e_norm = los.domains.at(i).electron_density / (1e-3 / cm3);
+			double Delta_agamma_kpc = 7.6e-2 * gag_norm * B_T_norm; // Eq.4 in Horns+12
+			double Delta_pl_kpc = -1.1e-10 / Energy_norm * n_e_norm;
+			double Delta_QED_kpc = 4.1e-6 / Energy_norm * pow2(B_T_norm);
+
+			Delta_agamma.push_back(Delta_agamma_kpc / kpc);
+			Delta_pl.push_back(Delta_pl_kpc / kpc);
+			Delta_QED.push_back(Delta_QED_kpc / kpc);
+			Delta_par.push_back(Delta_pl.back() + 3.5 * Delta_QED.back()); // Eq.3.10 Bassan+10
+			Delta_perp.push_back(Delta_pl.back() + 2.0 * Delta_QED.back()); // Eq.3.11 Bassan+10
+		}
+
+		MyMatrix Tk_total, rho, rho_old;
+
+		rho_old(0, 0) = std::complex<double>(0.0, 0.0);
+		rho_old(1, 1) = std::complex<double>(0.0, 0.0); // Photon unpolarized. Initial condition.
+		rho_old(2, 2) = std::complex<double>(1.0, 0.0); // Full ALPs beam. Initial condition.
+
+		Solver(nDomains, Delta_agamma, Delta_pl, Delta_QED, Delta_par, Delta_perp, Delta_a_kpc / kpc, los.domains, Xsec_H2, Xsec_HI, rho_old, rho, Tk_total);
+
+		std::cout << "... energy : " << Energy / eV << std::endl;
+
+		std::cout << "... T_k : " << std::endl;
+
+		Tk_total.Print();
+
+		double Pag_PDF = real(rho(2, 2));
+		double Iav_PDF = real(rho(0, 0) + rho(1, 1));
+		double Qav_PDF = real(rho(0, 0) - rho(1, 1));
+		double Uav_PDF = real(rho(0, 1) + rho(1, 0));
+		double Vav_PDF = imag(rho(1, 0) - rho(0, 1));
+
+		double PolDeg_PDF = std::sqrt(pow2(Qav_PDF) + pow2(Uav_PDF) /*+ pow(VavPDF, 2)*/) / Iav_PDF; // Eq. 3.44 Bassan+10
+		double PosAngle_PDF = RadToDeg * 0.5 * atan2(Uav_PDF, Qav_PDF);
+
+		if (Iav_PDF < 0) {
+			std::cout << "Warning: Negative Intensity" << std::endl;
+			rho.Print();
+		}
+
+		if (do_output_) {
+			output_ss << std::scientific << Energy / eV << "\t" << Iav_PDF << "\t" << Pag_PDF << "\t";
+			output_ss << real(rho(0, 0)) << "\t" << real(rho(1, 1)) << "\t" << real(rho(2, 2)) << "\t";
+			output_ss << imag(rho(0, 0)) << "\t" << imag(rho(1, 1)) << "\t" << imag(rho(2, 2)) << "\t";
+			output_ss << std::endl;
+		}
+
+		Delta_agamma.clear();
+		Delta_pl.clear();
+		Delta_QED.clear();
+		Delta_par.clear();
+		Delta_perp.clear();
+
+	} //close energy loop
+
+	time(&timeEnd);
+
+	std::cout << "Ended in " << difftime(timeEnd, timeBegin) << " seconds." << std::endl;
+
+	//		output.push_back(EnergyInEv);
+	//		output.push_back(IavPDF);
+	//		output.push_back(PagPDF);
 }

@@ -1,9 +1,8 @@
 #include "solvers.h"
 
-void BassanSolver(const int& Ndom, const std::vector<double>& DeltaAgamma, const std::vector<double>& DeltaPl, const std::vector<double>& DeltaQED,
-		const std::vector<double>& DeltaPar, const std::vector<double>& DeltaPerp, const double& DeltaA, const std::vector<double>& psik,
-		const std::vector<double>& gas_densH2, const std::vector<double>& gas_densHI, const double& xsecH2, const double& xsecHI, const MyMatrix& OldRho,
-		MyMatrix& Rho, MyMatrix& Tktotal) {
+void Solver(const int& Ndom, const std::vector<double>& DeltaAgamma, const std::vector<double>& DeltaPl, const std::vector<double>& DeltaQED,
+		const std::vector<double>& DeltaPar, const std::vector<double>& DeltaPerp, const double& DeltaA, const std::vector<domain>& domains, const double& xsecH2,
+		const double& xsecHI, const MyMatrix& OldRho, MyMatrix& Rho, MyMatrix& Tktotal) {
 
 	const double L = step_size; // [kpc]
 
@@ -12,20 +11,18 @@ void BassanSolver(const int& Ndom, const std::vector<double>& DeltaAgamma, const
 	MyMatrix Tkcross, Tktemp, Tkfinal(true), Tkfinaltemp;
 	MyMatrix Tkone(true);
 
-	double cp, sp;
-
 	double D[3];
 
-	for (int ione = 0; ione < Ndom; ++ione) {
+	for (int i = 0; i < Ndom; ++i) {
 
-		cp = cos(psik[ione]);
-		sp = sin(psik[ione]);
+		const double cp = std::cos(domains.at(i).psik);
+		const double sp = std::sin(domains.at(i).psik);
 
-		const double Gamma = 3.0 * (gas_densH2[ione] * xsecH2 + gas_densHI[ione] * xsecHI); // CHECK!
+		const double Gamma = 3.0 * (domains.at(i).H2_density * xsecH2 + domains.at(i).H2_density * xsecHI); // TODO CHECK!
 
-		const double Theta = 0.5 * atan2(2.0 * DeltaAgamma[ione], (DeltaPar[ione] - DeltaA)); // Eq. 3.19
+		const double Theta = 0.5 * atan2(2.0 * DeltaAgamma[i], (DeltaPar[i] - DeltaA)); // Eq. 3.19
 
-		InitD(DeltaPerp[ione], DeltaPar[ione], DeltaA, DeltaAgamma[ione], D); // Eq. 3.16
+		InitD(DeltaPerp[i], DeltaPar[i], DeltaA, DeltaAgamma[i], D); // Eq. 3.16
 
 		InitTABC(cp, sp, Theta, TA, TB, TC); // Eq. 3.38
 
@@ -38,20 +35,13 @@ void BassanSolver(const int& Ndom, const std::vector<double>& DeltaAgamma, const
 		Mult(Tkone, Tktemp, Tktotal);
 		Conjugate(Tktotal, Tkcross);
 
-		/*
-		 if (PRINT_AT_EACH_TIMESTEP) {
-		 Mult(Tktotal,Tkfinal,Tkfinaltemp);
-		 Equal(Tkfinaltemp,Tkfinal);
-		 }
-		 */
-
 		Mult(Tktotal, OldRho, Tkcross, Rho);
 		Equal(Tktotal, Tkone);
 
 #ifdef DEBUGMODE
-		const double PagPDF_temp = real(Rho(2,2));
-		const double IavPDF_temp = real(Rho(0,0) + Rho(1,1));
-		std::cout<<IavPDF_temp<<" "<<PagPDF_temp<<std::endl;
+		auto Pag_PDF_ = real(Rho(2,2));
+		auto Iav_PDF_ = real(Rho(0,0) + Rho(1,1));
+		std::cout << Iav_PDF_ << "\t" << Pag_PDF_ << "\n";
 #endif
 	}
 
