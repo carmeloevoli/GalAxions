@@ -5,6 +5,8 @@
 #include <cmath>
 #include "constants.h"
 
+extern "C" double ymw16_ne(double x_pc, double y_pc, double z_pc);
+
 class ElectronModel {
 public:
 	ElectronModel() {
@@ -24,20 +26,12 @@ private:
 	double A2 = 2.0 * kpc;
 	double R2 = 4.0 * kpc;
 public:
-	double get(const double& x, const double& y, const double& z) const override {
-		double r = std::sqrt(x * x + y * y);
-		double ne1 = fne1 * exp(-fabs(z) / H1) * exp(-pow2(r / A1));
-		double ne2 = fne2 * exp(-fabs(z) / H2) * exp(-pow2((r - R2) / A2));
-		return ne1 + ne2;
-	}
+	double get(const double& x, const double& y, const double& z) const override;
 };
 
 class YMW16: public ElectronModel {
 public:
-	double get(const double& x, const double& y, const double& z) const override {
-		//return ymw16_ne(pos.y / pc, pos.x / pc, pos.z / pc) / cm3;
-		return 0;
-	}
+	double get(const double& x, const double& y, const double& z) const override;
 };
 
 #endif
