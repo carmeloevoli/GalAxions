@@ -1,6 +1,10 @@
 # COMPILING FILES
 build/ 
 
+# OTHERS
+plots/*.pdf
+plots/*.pyc
+
 # ECLIPSE
 .cproject
 .project
