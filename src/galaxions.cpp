@@ -35,18 +35,15 @@ void galAxions::createGasDensity(const GasDensityType& gastype_) {
 
 void galAxions::printLos(const double& rmax_) {
 	std::cout << "# write los in " << los_filename << "\n";
-
 	los_ss << "# d [kpc] - B perp [muG] - B tot [muG] - psi_k - n_e [cm-3]\n";
 	los_ss << std::scientific << std::setprecision(5);
-	for (size_t i = los.domains.size() - 1; i > 0; --i) {
-		if (los.domains.at(i).distance < rmax_) {
-			los_ss << los.domains.at(i).distance / kpc << "\t";
-			los_ss << los.domains.at(i).magnetic_field_perp / muG << "\t";
-			los_ss << los.domains.at(i).magnetic_field_total / muG << "\t";
-			los_ss << los.domains.at(i).psik << "\t";
-			los_ss << los.domains.at(i).electron_density * cm3 << "\t";
-			los_ss << std::endl;
-		}
+	for (auto it = los.domains.begin(); it != los.domains.end(); it++) {
+		los_ss << it->distance / kpc << "\t";
+		los_ss << it->magnetic_field_perp / muG << "\t";
+		los_ss << it->magnetic_field_total / muG << "\t";
+		los_ss << it->psik << "\t";
+		los_ss << it->electron_density * cm3 << "\t";
+		los_ss << std::endl;
 	}
 }
 
