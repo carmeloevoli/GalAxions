@@ -1,5 +1,5 @@
-#ifndef __GALAXIONS_H
-#define __GALAXIONS_H
+#ifndef __GALCONDA_H
+#define __GALCONDA_H
 
 #include <cstdlib>
 #include <algorithm>
@@ -17,7 +17,6 @@
 #include "gas.h"
 #include "Ferriere07.h"
 #include "magneticfield.h"
-#include "Farrar.h"
 #include "los.h"
 #include "Pshirkov.h"
 #include "JF12.h"
@@ -74,7 +73,8 @@ public:
 
 	void reverseLos();
 
-	void calculateProbability(const size_t& nEnergy_, const double& Emin_, const double& Emax_, const bool& do_damping_, const bool& do_output_ = true);
+	void calculateProbability(const size_t& nEnergy_, const double& Emin_, const double& Emax_, const bool& do_damping_,
+			const bool& do_output_ = true);
 };
 
 #endif

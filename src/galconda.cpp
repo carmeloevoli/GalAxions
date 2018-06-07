@@ -1,17 +1,17 @@
-#include "galaxions.h"
+#include "galconda.h"
 
 #define ALMOST_ONE 0.9999999999
 
 void galAxions::createMagneticField(const MagneticFieldType& btype_, const int& bmode_) {
 	if (btype_ == CONSTANT) {
 		std::cout << "# init constant magnetic field!" << std::endl;
-		magnetic_field = std::make_shared<ConstantField>(2.0);
+		magnetic_field = std::make_shared < ConstantField > (2.0);
 	} else if (btype_ == FARRAR) {
 		std::cout << "# init Farrar magnetic field!" << std::endl;
 		magnetic_field = std::make_shared<JF12Field>();
 	} else if (btype_ == PSHIRKOV) {
 		std::cout << "# init Pshirkov magnetic field!" << std::endl;
-		magnetic_field = std::make_shared<PshirkovField>(bmode_, 0.0, 8.5, 2.0);
+		magnetic_field = std::make_shared < PshirkovField > (bmode_, 0.0, 8.5, 2.0);
 	} else {
 		std::cerr << "Magnetic Field model not found!\n";
 	}
@@ -37,31 +37,32 @@ void galAxions::printLos(const double& rmax_) {
 	std::cout << "# write los in " << los_filename << "\n";
 	los_ss << "# d [kpc] - B perp [muG] - B tot [muG] - psi_k - n_e [cm-3]\n";
 	los_ss << std::scientific << std::setprecision(5);
-	for (auto it = los.domains.begin(); it != los.domains.end(); it++) {
-		los_ss << it->distance / kpc << "\t";
-		los_ss << it->magnetic_field_perp / muG << "\t";
-		los_ss << it->magnetic_field_total / muG << "\t";
-		los_ss << it->psik << "\t";
-		los_ss << it->electron_density * cm3 << "\t";
+	for (auto domain : los.domains) {
+		los_ss << domain.distance / kpc << "\t";
+		los_ss << domain.magnetic_field_perp / muG << "\t";
+		los_ss << domain.magnetic_field_total / muG << "\t";
+		los_ss << domain.psik << "\t";
+		los_ss << domain.electron_density * cm3 << "\t";
 		los_ss << std::endl;
 	}
 }
 
 double get_psik(const std::vector<double>& ref_direction, const std::vector<double>& B_perp) {
-	double test_psik = 0; // the angle between B_transverse and y axis
+	double psik = 0; // the angle between B_transverse and y axis
 	auto B_perp_norm = normVector(B_perp);
 	if (B_perp_norm != 0) {
-		double cosarg = (ref_direction[0] * B_perp[0] + ref_direction[1] * B_perp[1] + ref_direction[2] * B_perp[2]) / B_perp_norm;
+		double cosarg = (ref_direction[0] * B_perp[0] + ref_direction[1] * B_perp[1] + ref_direction[2] * B_perp[2]);
+		cosarg /= B_perp_norm;
 		if (cosarg >= ALMOST_ONE)
-			test_psik = 0.0;
+			psik = 0.0;
 		else if (cosarg <= -ALMOST_ONE)
-			test_psik = M_PI;
+			psik = M_PI;
 		else
-			test_psik = std::acos(cosarg);
+			psik = std::acos(cosarg);
 	} else {
-		test_psik = 0.0;
+		psik = 0.0;
 	}
-	return test_psik;
+	return psik;
 }
 
 void galAxions::createLos(const double& ldeg_, const double& bdeg_, const double& maxDistance_) {
@@ -78,7 +79,8 @@ void galAxions::createLos(const double& ldeg_, const double& bdeg_, const double
 
 	bool done = false;
 
-	while (fabs(x_galaxy) < x_max && fabs(y_galaxy) < y_max && fabs(z_galaxy) < z_max && distance_along_los < maxDistance_) {
+	while (fabs(x_galaxy) < x_max && fabs(y_galaxy) < y_max && fabs(z_galaxy) < z_max
+			&& distance_along_los < maxDistance_) {
 
 		distance_along_los += step_size;
 
@@ -111,7 +113,8 @@ void galAxions::createLos(const double& ldeg_, const double& bdeg_, const double
 	std::reverse(los.domains.begin(), los.domains.end());
 }
 
-void galAxions::calculateProbability(const size_t& nEnergy_, const double& Emin_, const double& Emax_, const bool& do_damping_, const bool& do_output_) {
+void galAxions::calculateProbability(const size_t& nEnergy_, const double& Emin_, const double& Emax_,
+		const bool& do_damping_, const bool& do_output_) {
 
 	time_t timeBegin, timeEnd;
 
@@ -124,7 +127,9 @@ void galAxions::calculateProbability(const size_t& nEnergy_, const double& Emin_
 #endif
 	for (size_t iE = 0; iE < nEnergy_; iE++) {
 
-		const double Energy = (nEnergy_ == 1) ? Emin_ : pow(10, log10(Emin_) + double(iE) / double(nEnergy_ - 1) * log10(Emax_ / Emin_));
+		const double Energy =
+				(nEnergy_ == 1) ?
+						Emin_ : pow(10, log10(Emin_) + double(iE) / double(nEnergy_ - 1) * log10(Emax_ / Emin_));
 
 		std::vector<double> Delta_agamma;
 		std::vector<double> Delta_pl;
@@ -160,7 +165,8 @@ void galAxions::calculateProbability(const size_t& nEnergy_, const double& Emin_
 		rho_old(1, 1) = std::complex<double>(0.0, 0.0); // Photon unpolarized. Initial condition.
 		rho_old(2, 2) = std::complex<double>(1.0, 0.0); // Full ALPs beam. Initial condition.
 
-		Solver(nDomains, Delta_agamma, Delta_pl, Delta_QED, Delta_par, Delta_perp, Delta_a_kpc / kpc, los.domains, Xsec_H2, Xsec_HI, rho_old, rho, Tk_total);
+		Solver(nDomains, Delta_agamma, Delta_pl, Delta_QED, Delta_par, Delta_perp, Delta_a_kpc / kpc, los.domains,
+				Xsec_H2, Xsec_HI, rho_old, rho, Tk_total);
 
 		std::cout << "... energy : " << Energy / eV << std::endl;
 
@@ -174,7 +180,8 @@ void galAxions::calculateProbability(const size_t& nEnergy_, const double& Emin_
 		double Uav_PDF = real(rho(0, 1) + rho(1, 0));
 		double Vav_PDF = imag(rho(1, 0) - rho(0, 1));
 
-		double PolDeg_PDF = std::sqrt(pow2(Qav_PDF) + pow2(Uav_PDF) /*+ pow(VavPDF, 2)*/) / Iav_PDF; // Eq. 3.44 Bassan+10
+		double PolDeg_PDF = std::sqrt(
+		pow2(Qav_PDF) + pow2(Uav_PDF) /*+ pow(VavPDF, 2)*/) / Iav_PDF; // Eq. 3.44 Bassan+10
 		double PosAngle_PDF = 0.5 * atan2(Uav_PDF, Qav_PDF); // TODO convert in deg?
 
 		if (Iav_PDF < 0) {
