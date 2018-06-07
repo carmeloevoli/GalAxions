@@ -1,15 +1,7 @@
 #ifndef __CONSTANTS_H
 #define __CONSTANTS_H
 
-#include "mks.h"
-
-// ANGLE CONSTANTS
-
-const double PI = M_PI;
-const double PiOver2 = PI / 2.0;
-const double PiOver4 = PI / 4.0;
-const double DegToRad = PI / 180.0;
-const double RadToDeg = 180.0 / PI;
+#include "cgs.h"
 
 // LOS CONSTANTS
 
