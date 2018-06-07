@@ -1,6 +1,6 @@
 # README #
 
-The C++ code GalAxions is to compute the oscillation probability of photons into axion-like particles (and viceversa) in the Milky Way magnetic field.
+The C++ code GALCONDA (GALactic CONversion of Dark-matter Axions) is to compute the oscillation probability of photons into axion-like particles (and viceversa) in the Milky Way magnetic field.
 
 It is constantly under development, an example of usage has been presented here:
 
