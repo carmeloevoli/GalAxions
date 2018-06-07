@@ -6,7 +6,7 @@ PshirkovField::PshirkovField(const unsigned int& bMode_, const double& B0Turb_, 
 
 	bMode = bMode_;
 
-	p = (bMode == ASS) ? -5.0 * DegToRad : -6.0 * DegToRad; // [ASS,BSS]
+	p = (bMode == ASS) ? deg2rad(-5.0) : deg2rad(-6.0); // [ASS,BSS]
 	z0 = 1.0;  // [kpc]
 	d = -0.6; // [kpc]
 	B0 = 2.0;  // [muG]
@@ -57,7 +57,7 @@ std::vector<double> PshirkovField::GetB(const double& x_, const double& y_, cons
 	double Bdisk, Bhalo;
 
 	const double rho = (sqrt(x_ * x_ + y_ * y_) > 1e-3) ? sqrt(x_ * x_ + y_ * y_) : 1e-3;
-	const double theta = atan2(y_, x_); //+M_PI/2.0;
+	const double theta = atan2(y_, x_); // +M_PI/2.0;
 	const double z = z_;
 
 	Bdisk = GetBdisk(rho, theta, z);

@@ -19,10 +19,10 @@ JF12Field::JF12Field() {
 	useTurbulent = false;
 
 	// spiral arm parameters
-	pitch = 11.5 * PI / 180;
-	sinPitch = sin(pitch);
-	cosPitch = cos(pitch);
-	tan90MinusPitch = tan(PI / 2 - pitch);
+	pitch = 11.5 * M_PI / 180;
+	sinPitch = std::sin(pitch);
+	cosPitch = std::cos(pitch);
+	tan90MinusPitch = std::tan(M_PI / 2 - pitch);
 
 	rArms[0] = 5.1 * kpc;
 	rArms[1] = 6.3 * kpc;
@@ -55,7 +55,7 @@ JF12Field::JF12Field() {
 	z0 = 5.3 * kpc;
 
 	bX = 4.6 * muG;
-	thetaX0 = 49.0 * PI / 180;
+	thetaX0 = 49.0 * M_PI / 180;
 	sinThetaX0 = sin(thetaX0);
 	cosThetaX0 = cos(thetaX0);
 	tanThetaX0 = tan(thetaX0);
@@ -233,11 +233,11 @@ std::vector<double> JF12Field::GetB(const double& x, const double& y, const doub
 		b.at(2) += b_t.at(2);
 	}
 	/*if (useStriated) {
-		std::vector<double> b_s = getStriatedField(x, y, z);
-		b.at(0) += b_s.at(0);
-		b.at(1) += b_s.at(1);
-		b.at(2) += b_s.at(2);
-	}*/
+	 std::vector<double> b_s = getStriatedField(x, y, z);
+	 b.at(0) += b_s.at(0);
+	 b.at(1) += b_s.at(1);
+	 b.at(2) += b_s.at(2);
+	 }*/
 	if (useRegular) {
 		std::vector<double> b_r = getRegularField(x, y, z);
 		b.at(0) += b_r.at(0);

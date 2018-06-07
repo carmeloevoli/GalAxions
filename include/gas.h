@@ -3,6 +3,8 @@
 
 #include <algorithm>
 #include <cmath>
+
+#include "cgs.h"
 #include "constants.h"
 
 extern "C" double ymw16_ne(double x_pc, double y_pc, double z_pc);

@@ -2,7 +2,7 @@
 #define INCLUDE_FERRIERE07_H_
 
 #include <cmath>
-#include "mks.h"
+#include "cgs.h"
 #include "gas.h"
 
 class Ferriere07: public ElectronModel {
