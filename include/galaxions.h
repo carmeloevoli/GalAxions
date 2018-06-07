@@ -49,12 +49,6 @@ private:
 
 	LOS los;
 
-	std::vector<double> Delta_agamma;
-	std::vector<double> Delta_pl;
-	std::vector<double> Delta_QED;
-	std::vector<double> Delta_par;
-	std::vector<double> Delta_perp;
-
 public:
 
 	galAxions(const double& axionMass_, const double& gag_, const std::string& filename_) :

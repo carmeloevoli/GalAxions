@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 
-#include "mks.h"
+#include "cgs.h"
 #include "galaxions.h"
 
 int main(int argc, char** argv) {
@@ -27,7 +27,7 @@ int main(int argc, char** argv) {
 	g->createLos(l_los_deg, b_los_deg);
 	g->printLos(30 * kpc);
 
-	g->calculateProbability(200, 1e-4 * TeV, 1e2 * TeV, false); // HESS J1640-465
+	g->calculateProbability(1000, 1e-5 * TeV, 1e0 * TeV, false); // HESS J1640-465
 
 	if (g)
 		delete g;

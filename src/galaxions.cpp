@@ -92,6 +92,7 @@ void galAxions::createLos(const double& ldeg_, const double& bdeg_, const double
 		auto B_perp = magnetic_field->GetBperp(x_galaxy, y_galaxy, z_galaxy);
 		auto B_perp_norm = normVector(B_perp);
 		auto B_total = magnetic_field->GetB(x_galaxy, y_galaxy, z_galaxy);
+		auto B_total_norm = normVector(B_total);
 		auto n_e = gas->get(x_galaxy, y_galaxy, z_galaxy);
 
 		if (!done) { // Fix once the reference direction
@@ -102,7 +103,7 @@ void galAxions::createLos(const double& ldeg_, const double& bdeg_, const double
 			ref_direction[2] /= B_perp_norm;
 		}
 
-		domain d = { B_perp_norm, normVector(B_total), distance_along_los, get_psik(ref_direction, B_perp), n_e, 0, 0 };
+		domain d = { B_perp_norm, B_total_norm, distance_along_los, get_psik(ref_direction, B_perp), n_e, 0, 0 };
 
 		los.domains.push_back(d);
 	}
@@ -125,6 +126,12 @@ void galAxions::calculateProbability(const size_t& nEnergy_, const double& Emin_
 
 		const double Energy = (nEnergy_ == 1) ? Emin_ : pow(10, log10(Emin_) + double(iE) / double(nEnergy_ - 1) * log10(Emax_ / Emin_));
 
+		std::vector<double> Delta_agamma;
+		std::vector<double> Delta_pl;
+		std::vector<double> Delta_QED;
+		std::vector<double> Delta_par;
+		std::vector<double> Delta_perp;
+
 		const double Xsec_H2 = 0;
 		const double Xsec_HI = 0;
 
@@ -133,9 +140,9 @@ void galAxions::calculateProbability(const size_t& nEnergy_, const double& Emin_
 		const double Energy_norm = Energy / TeV;
 		const double Delta_a_kpc = -7.8e-3 * pow2(axion_mass_norm) / Energy_norm;
 
-		for (size_t i = 0; i < nDomains; i++) {
-			double B_T_norm = los.domains.at(i).magnetic_field_perp / muG;
-			double n_e_norm = los.domains.at(i).electron_density / (1e-3 / cm3);
+		for (auto domain : los.domains) {
+			double B_T_norm = domain.magnetic_field_perp / muG;
+			double n_e_norm = domain.electron_density / (1e-3 / cm3);
 			double Delta_agamma_kpc = 7.6e-2 * gag_norm * B_T_norm; // Eq.4 in Horns+12
 			double Delta_pl_kpc = -1.1e-10 / Energy_norm * n_e_norm;
 			double Delta_QED_kpc = 4.1e-6 / Energy_norm * pow2(B_T_norm);
@@ -168,7 +175,7 @@ void galAxions::calculateProbability(const size_t& nEnergy_, const double& Emin_
 		double Vav_PDF = imag(rho(1, 0) - rho(0, 1));
 
 		double PolDeg_PDF = std::sqrt(pow2(Qav_PDF) + pow2(Uav_PDF) /*+ pow(VavPDF, 2)*/) / Iav_PDF; // Eq. 3.44 Bassan+10
-		double PosAngle_PDF = RadToDeg * 0.5 * atan2(Uav_PDF, Qav_PDF);
+		double PosAngle_PDF = 0.5 * atan2(Uav_PDF, Qav_PDF); // TODO convert in deg?
 
 		if (Iav_PDF < 0) {
 			std::cout << "Warning: Negative Intensity" << std::endl;
@@ -181,20 +188,9 @@ void galAxions::calculateProbability(const size_t& nEnergy_, const double& Emin_
 			output_ss << imag(rho(0, 0)) << "\t" << imag(rho(1, 1)) << "\t" << imag(rho(2, 2)) << "\t";
 			output_ss << std::endl;
 		}
-
-		Delta_agamma.clear();
-		Delta_pl.clear();
-		Delta_QED.clear();
-		Delta_par.clear();
-		Delta_perp.clear();
-
 	} //close energy loop
 
 	time(&timeEnd);
 
 	std::cout << "Ended in " << difftime(timeEnd, timeBegin) << " seconds." << std::endl;
-
-	//		output.push_back(EnergyInEv);
-	//		output.push_back(IavPDF);
-	//		output.push_back(PagPDF);
 }

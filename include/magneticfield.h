@@ -7,7 +7,7 @@
 #include <vector>
 #include <cmath>
 
-#include "mks.h"
+#include "cgs.h"
 #include "constants.h"
 
 inline double normVector(const std::vector<double>& v) {

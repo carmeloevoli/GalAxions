@@ -21,9 +21,9 @@ public:
 	}
 
 	LOS(const double& ldeg_, const double& bdeg_) {
-		l = ldeg_ * DegToRad; // \phi in [0,2\pi]
+		l = deg2rad(ldeg_); // \phi in [0,2\pi]
 		//los.b = (bdeg < 0) ? (90.0-bdeg)*DegToRad : -1; // \theta in [0,\pi]
-		b = bdeg_ * DegToRad;
+		b = deg2rad(bdeg_);
 		sin_l = std::sin(l);
 		cos_l = std::cos(l);
 		sin_b = std::sin(b);
