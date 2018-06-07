@@ -20,15 +20,13 @@ include_directories("${CMAKE_SOURCE_DIR}/include")
 
 # add source files
 set(GALAXIONS_SRCS
-        include/JF12.h
-        src/Farrar.cpp
         src/gas.cpp
-        src/JF12.cpp
-        src/Pshirkov.cpp
+        src/galconda.cpp
         src/Ferriere07.cpp
-        src/galaxions.cpp
+        src/JF12.cpp
         src/magneticfield.cpp
         src/mymatrix.cpp
+        src/Pshirkov.cpp
         src/solvers.cpp
         )
 

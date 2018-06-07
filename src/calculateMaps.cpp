@@ -2,7 +2,7 @@
 #include <iostream>
 #include <string>
 
-#include "galaxions.h"
+#include "../include/galconda.h"
 #include "healpixMap.h"
 
 #define KEV 1e3

@@ -1,8 +1,8 @@
 #include <iostream>
 #include <string>
 
+#include "../include/galconda.h"
 #include "cgs.h"
-#include "galaxions.h"
 
 int main(int argc, char** argv) {
 	std::cout << "# Welcome to GalAxions!" << std::endl;
