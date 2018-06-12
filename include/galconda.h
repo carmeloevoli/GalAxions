@@ -31,7 +31,7 @@ enum GasDensityType {
   FERRIERE, CORDES, YMW
 };
 
-class galAxions {
+class GALCONDA {
 private:
 
     double axionMass;
@@ -50,7 +50,7 @@ private:
 
 public:
 
-    galAxions(const double& axionMass_, const double& gag_, const std::string& filename_)
+    GALCONDA(const double& axionMass_, const double& gag_, const std::string& filename_)
             :axionMass(axionMass_), gag(gag_) {
         output_filename = filename_ + ".txt";
         los_filename = filename_ + ".los";
@@ -58,7 +58,7 @@ public:
         los_ss.open(los_filename.c_str(), std::ofstream::out);
     }
 
-    ~galAxions() {
+    ~GALCONDA() {
         output_ss.close();
         los_ss.close();
     }

@@ -20,7 +20,7 @@ int main(int argc, char** argv) {
 
     const std::string filename = argv[1];
 
-    galAxions* g = new galAxions(axion_mass, g_ag, filename);
+    GALCONDA* g = new GALCONDA(axion_mass, g_ag, filename);
 
     g->createMagneticField(FARRAR); // Alternative models: PSHIRKOV, CONSTANT
     g->createGasDensity(YMW); // Alternative models: CORDES91, FERRIERE

@@ -2,7 +2,7 @@
 
 #define ALMOST_ONE 0.9999999999
 
-void galAxions::createMagneticField(const MagneticFieldType& btype_, const int& bmode_) {
+void GALCONDA::createMagneticField(const MagneticFieldType& btype_, const int& bmode_) {
     if (btype_ == CONSTANT) {
         std::cout << "# init constant magnetic field!" << std::endl;
         magnetic_field = std::make_shared<ConstantField>(2.0);
@@ -20,7 +20,7 @@ void galAxions::createMagneticField(const MagneticFieldType& btype_, const int& 
     }
 }
 
-void galAxions::createGasDensity(const GasDensityType& gastype_) {
+void GALCONDA::createGasDensity(const GasDensityType& gastype_) {
     if (gastype_ == FERRIERE) {
         std::cout << "# init Ferriere gas\n";
         gas = std::make_shared<Ferriere07>();
@@ -39,7 +39,7 @@ void galAxions::createGasDensity(const GasDensityType& gastype_) {
 
 }
 
-void galAxions::printLos(const double& rmax_) {
+void GALCONDA::printLos(const double& rmax_) {
     std::cout << "# write los in " << los_filename << "\n";
     los_ss << "# d [kpc] - B perp [muG] - B tot [muG] - psi_k - n_e [cm-3]\n";
     los_ss << std::scientific << std::setprecision(5);
@@ -72,7 +72,7 @@ double get_psik(const std::vector<double>& ref_direction, const std::vector<doub
     return psik;
 }
 
-void galAxions::createLos(const double& ldeg_, const double& bdeg_, const double& maxDistance_) {
+void GALCONDA::createLos(const double& ldeg_, const double& bdeg_, const double& maxDistance_) {
     std::cout << "# create los along l : " << ldeg_ << " and b : " << bdeg_ << "\n";
 
     los = LOS(ldeg_, bdeg_);
@@ -120,7 +120,7 @@ void galAxions::createLos(const double& ldeg_, const double& bdeg_, const double
     std::reverse(los.domains.begin(), los.domains.end());
 }
 
-void galAxions::calculateProbability(const size_t& nEnergy_, const double& Emin_, const double& Emax_,
+void GALCONDA::calculateProbability(const size_t& nEnergy_, const double& Emin_, const double& Emax_,
         const bool& do_damping_, const bool& do_output_) {
 
     time_t timeBegin, timeEnd;

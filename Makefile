@@ -12,7 +12,7 @@ LIBS+=$(HEALPIXDIR)/lib/libchealpix.a
 #LIBS+=-L/phenod/data/cevoli/libs/Healpix_3.11/lib -lchealpix 
 
 
-EXEC  = galAxions.out	
+EXEC  = GALCONDA.out
 OBJS  = Farrar.o galaxions.o magnfield.o mymatrix.o Pshirkov.o solvers.o
 INCS  = $(wildcard *.h)	
 

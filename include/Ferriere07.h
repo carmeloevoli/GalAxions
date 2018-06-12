@@ -36,4 +36,4 @@ public:
     }
 };
 
-#endif /* INCLUDE_FERRIERE07_H_ */
+#endif
