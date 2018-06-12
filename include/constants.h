@@ -6,7 +6,7 @@
 // LOS CONSTANTS
 
 const double sun_r = 8.5 * kpc;
-const double sun_x = -8.5 * kpc;
+const double sun_x = 8.5 * kpc;
 const double sun_y = 0;
 const double sun_z = 0.;
 const double step_size = 0.001 * kpc;
