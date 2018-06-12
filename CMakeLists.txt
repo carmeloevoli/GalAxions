@@ -1,4 +1,4 @@
-project(GALAXIONS C CXX)
+project(GALCONDA C CXX)
 cmake_minimum_required(VERSION 2.8)
 
 set(CMAKE_VERBOSE_MAKEFILE off)
@@ -12,14 +12,29 @@ set(GALAXIONS_LIBRARIES)
 
 # YMW16 code (provided)
 add_subdirectory(libs/ymw16)
-list(APPEND GALAXIONS_LIBRARIES ymw16)
-list(APPEND GALAXIONS_INCLUDES libs/ymw16)
+list(APPEND GALCONDA_LIBRARIES ymw16)
+list(APPEND GALCONDA_INCLUDES libs/ymw16)
 
 # include
 include_directories("${CMAKE_SOURCE_DIR}/include")
 
+# add header files
+set(GALCONDA_HDRS
+        include/cgs.h
+        include/constants.h
+        include/damping.h
+        include/Ferriere07.h
+        include/galconda.h
+        include/gas.h
+        include/JF12.h
+        include/los.h
+        include/magneticfield.h
+        include/mymatrix.h
+        include/Pshirkov.h
+        include/solvers.h)
+
 # add source files
-set(GALAXIONS_SRCS
+set(GALCONDA_SRCS
         src/gas.cpp
         src/galconda.cpp
         src/Ferriere07.cpp
@@ -31,15 +46,15 @@ set(GALAXIONS_SRCS
         )
 
 # make library
-include_directories(include ${GALAXIONS_INCLUDES})
-add_library(GALAXIONS ${GALAXIONS_SRCS} ${GALAXIONS_INCLUDES})
+include_directories(include ${GALCONDA_INCLUDES})
+add_library(GALCONDA ${GALCONDA_SRCS} ${GALCONDA_HDRS} ${GALCONDA_INCLUDES})
 
 # make executables
 add_executable(los src/main.cpp)
-target_link_libraries(los GALAXIONS ${GALAXIONS_LIBRARIES})
+target_link_libraries(los GALCONDA ${GALCONDA_LIBRARIES})
 
-add_executable(map src/calculateMaps.cpp)
-target_link_libraries(map GALAXIONS ${GALAXIONS_LIBRARIES})
+#add_executable(map src/calculateMaps.cpp)
+#target_link_libraries(map GALCONDA ${GALCONDA_LIBRARIES})
 
 # show summary
 message(STATUS "CMAKE_SYSTEM .......... = ${CMAKE_SYSTEM}")
@@ -47,5 +62,5 @@ message(STATUS "BUILD_SHARED_LIBS ..... = ${BUILD_SHARED_LIBS}")
 message(STATUS "CMAKE_CXX_COMPILER .... = ${CMAKE_CXX_COMPILER}")
 message(STATUS "CMAKE_CXX_FLAGS ....... = ${CMAKE_CXX_FLAGS}")
 message(STATUS "CMAKE_INCLUDE_PATH .... = ${CMAKE_INCLUDE_PATH}")
-message(STATUS "GALAXIONS_INCLUDES ....... = ${GALAXIONS_INCLUDES}")
-message(STATUS "GALAXIONS_LIBRARIES ...... = ${GALAXIONS_LIBRARIES}")
+message(STATUS "GALCONDA_INCLUDES ..... = ${GALCONDA_INCLUDES}")
+message(STATUS "GALCONDA_LIBRARIES .... = ${GALCONDA_LIBRARIES}")

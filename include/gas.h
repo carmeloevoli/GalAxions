@@ -17,7 +17,7 @@ public:
     virtual ~ElectronModel() {
     }
 
-    virtual double get(const double &x, const double &y, const double &z) const = 0;
+    virtual double get(const double& x, const double& y, const double& z) const = 0;
 };
 
 class Cordes91 : public ElectronModel {
@@ -31,12 +31,12 @@ private:
     double R2 = 4.0 * kpc;
 
 public:
-    double get(const double &x, const double &y, const double &z) const override;
+    double get(const double& x, const double& y, const double& z) const override;
 };
 
 class YMW16 : public ElectronModel {
 public:
-    double get(const double &x, const double &y, const double &z) const override;
+    double get(const double& x, const double& y, const double& z) const override;
 };
 
 #endif

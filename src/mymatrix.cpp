@@ -11,7 +11,7 @@ void InitD(const double DeltaPerp, const double DeltaPar, const double DeltaA, c
     D[2] = dsym - dasym; // Eq. 3.22
 }
 
-void InitTABC(const double cp, const double sp, const double theta, MyMatrix &TA, MyMatrix &TB, MyMatrix &TC) {
+void InitTABC(const double cp, const double sp, const double theta, MyMatrix& TA, MyMatrix& TB, MyMatrix& TC) {
 
     double ct = cos(theta);
     double st = sin(theta);
@@ -63,7 +63,7 @@ void InitTABC(const double cp, const double sp, const double theta, MyMatrix &TA
     TC(2, 2) = std::complex<double>(ctct, 0.0);
 }
 
-void InitTA(const double cp, const double sp, MyMatrix &TA) {
+void InitTA(const double cp, const double sp, MyMatrix& TA) {
 
     TA(0, 0) = std::complex<double>(cp * cp, 0.0);
     TA(0, 1) = std::complex<double>(-sp * cp, 0.0);
@@ -78,7 +78,7 @@ void InitTA(const double cp, const double sp, MyMatrix &TA) {
     TA(2, 2) = std::complex<double>(0.0, 0.0);
 }
 
-void InitTB(const double cp, const double sp, const double theta, MyMatrix &TB) {
+void InitTB(const double cp, const double sp, const double theta, MyMatrix& TB) {
 
     double ct = cos(theta);
     double st = sin(theta);
@@ -96,7 +96,7 @@ void InitTB(const double cp, const double sp, const double theta, MyMatrix &TB) 
     TB(2, 2) = std::complex<double>(st * st, 0.0);
 }
 
-void InitTC(const double cp, const double sp, const double theta, MyMatrix &TC) {
+void InitTC(const double cp, const double sp, const double theta, MyMatrix& TC) {
 
     double ct = cos(theta);
     double st = sin(theta);
@@ -114,7 +114,7 @@ void InitTC(const double cp, const double sp, const double theta, MyMatrix &TC) 
     TC(2, 2) = std::complex<double>(ct * ct, 0.0);
 }
 
-void Mult(const MyMatrix &T1, const MyMatrix &TT, MyMatrix &ret) {
+void Mult(const MyMatrix& T1, const MyMatrix& TT, MyMatrix& ret) {
 
     for (int i = 0; i < T1.GetNrows(); ++i) {
         for (int j = 0; j < T1.GetNcols(); ++j) {
@@ -124,14 +124,14 @@ void Mult(const MyMatrix &T1, const MyMatrix &TT, MyMatrix &ret) {
     }
 }
 
-void Mult(const MyMatrix &T1, const MyMatrix &TT, const MyMatrix &TTT, MyMatrix &ret) {
+void Mult(const MyMatrix& T1, const MyMatrix& TT, const MyMatrix& TTT, MyMatrix& ret) {
 
     MyMatrix temp;
     Mult(TT, TTT, temp);
     Mult(T1, temp, ret);
 }
 
-void Mult(const MyMatrix &T1, const std::complex<double> alpha, MyMatrix &ret) {
+void Mult(const MyMatrix& T1, const std::complex<double> alpha, MyMatrix& ret) {
 
     for (int i = 0; i < T1.GetNrows(); ++i) {
         for (int j = 0; j < T1.GetNcols(); ++j) {
@@ -140,7 +140,7 @@ void Mult(const MyMatrix &T1, const std::complex<double> alpha, MyMatrix &ret) {
     }
 }
 
-void Equal(const MyMatrix &T1, MyMatrix &ret) {
+void Equal(const MyMatrix& T1, MyMatrix& ret) {
 
     for (int i = 0; i < T1.GetNrows(); ++i) {
         for (int j = 0; j < T1.GetNcols(); ++j) {
@@ -149,7 +149,7 @@ void Equal(const MyMatrix &T1, MyMatrix &ret) {
     }
 }
 
-void Add(const MyMatrix &T1, const MyMatrix &TT, const MyMatrix &TTT, MyMatrix &ret) {
+void Add(const MyMatrix& T1, const MyMatrix& TT, const MyMatrix& TTT, MyMatrix& ret) {
 
     for (int i = 0; i < T1.GetNrows(); ++i) {
         for (int j = 0; j < T1.GetNcols(); ++j) {
@@ -158,7 +158,7 @@ void Add(const MyMatrix &T1, const MyMatrix &TT, const MyMatrix &TTT, MyMatrix &
     }
 }
 
-void Subtract(const MyMatrix &T1, const MyMatrix &TT, MyMatrix &ret) {
+void Subtract(const MyMatrix& T1, const MyMatrix& TT, MyMatrix& ret) {
 
     for (int i = 0; i < T1.GetNrows(); ++i) {
         for (int j = 0; j < T1.GetNcols(); ++j) {
@@ -167,7 +167,7 @@ void Subtract(const MyMatrix &T1, const MyMatrix &TT, MyMatrix &ret) {
     }
 }
 
-void Conjugate(const MyMatrix &T1, MyMatrix &ret) {
+void Conjugate(const MyMatrix& T1, MyMatrix& ret) {
 
     for (int i = 0; i < T1.GetNrows(); ++i) {
         for (int j = 0; j < T1.GetNcols(); ++j) {

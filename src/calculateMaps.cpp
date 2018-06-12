@@ -10,8 +10,7 @@
 #define GEV 1e9
 #define TEV 1e12
 
-int main(int argc, char** argv)
-{
+int main(int argc, char** argv) {
 //  std::cout<<"#Welcome to GalAxions Maps!"<<std::endl;
 //
 //  if (argc != 5) {

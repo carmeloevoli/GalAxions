@@ -6,13 +6,13 @@
 #include "constants.h"
 
 struct domain {
-    double magnetic_field_perp;
-    double magnetic_field_total;
-    double distance;
-    double psik;
-    double electron_density;
-    double HI_density;
-    double H2_density;
+  double magnetic_field_perp;
+  double magnetic_field_total;
+  double distance;
+  double psik;
+  double electron_density;
+  double HI_density;
+  double H2_density;
 };
 
 class LOS {
@@ -20,7 +20,7 @@ public:
     LOS() {
     }
 
-    LOS(const double &ldeg_, const double &bdeg_) {
+    LOS(const double& ldeg_, const double& bdeg_) {
         l = deg2rad(ldeg_); // \phi in [0,2\pi]
         //los.b = (bdeg < 0) ? (90.0-bdeg)*DegToRad : -1; // \theta in [0,\pi]
         b = deg2rad(bdeg_);

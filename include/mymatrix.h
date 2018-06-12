@@ -22,11 +22,11 @@ public:
         }
     }
 
-    MyMatrix(const MyMatrix &m) {
+    MyMatrix(const MyMatrix& m) {
         elements = m.elements;
     }
 
-    MyMatrix &operator=(const MyMatrix &m) {
+    MyMatrix& operator=(const MyMatrix& m) {
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 elements[i][j] = m(i, j);
@@ -35,7 +35,7 @@ public:
         return *this;
     }
 
-    MyMatrix &operator+=(const MyMatrix &m) {
+    MyMatrix& operator+=(const MyMatrix& m) {
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 elements[i][j] += m(i, j);
@@ -48,7 +48,7 @@ public:
 
     std::complex<double> operator()(int i, int j) const { return elements[i][j]; }
 
-    std::complex<double> &operator()(int i, int j) { return elements[i][j]; }
+    std::complex<double>& operator()(int i, int j) { return elements[i][j]; }
 
     inline int GetNcols() const {
         return 3;
@@ -69,26 +69,26 @@ public:
 
 void InitD(const double DeltaPerp, const double DeltaPar, const double DeltaA, const double DeltaAg, double D[]);
 
-void InitTA(const double cp, const double sp, MyMatrix &TA);
+void InitTA(const double cp, const double sp, MyMatrix& TA);
 
-void InitTB(const double cp, const double sp, const double theta, MyMatrix &TB);
+void InitTB(const double cp, const double sp, const double theta, MyMatrix& TB);
 
-void InitTC(const double cp, const double sp, const double theta, MyMatrix &TC);
+void InitTC(const double cp, const double sp, const double theta, MyMatrix& TC);
 
-void InitTABC(const double cp, const double sp, const double theta, MyMatrix &TA, MyMatrix &TB, MyMatrix &TC);
+void InitTABC(const double cp, const double sp, const double theta, MyMatrix& TA, MyMatrix& TB, MyMatrix& TC);
 
-void Add(const MyMatrix &T, const MyMatrix &TT, const MyMatrix &TTT, MyMatrix &ret);
+void Add(const MyMatrix& T, const MyMatrix& TT, const MyMatrix& TTT, MyMatrix& ret);
 
-void Subtract(const MyMatrix &T, const MyMatrix &TT, MyMatrix &ret);
+void Subtract(const MyMatrix& T, const MyMatrix& TT, MyMatrix& ret);
 
-void Mult(const MyMatrix &T, const MyMatrix &TT, const MyMatrix &TTT, MyMatrix &ret);
+void Mult(const MyMatrix& T, const MyMatrix& TT, const MyMatrix& TTT, MyMatrix& ret);
 
-void Mult(const MyMatrix &T, const MyMatrix &TT, MyMatrix &ret);
+void Mult(const MyMatrix& T, const MyMatrix& TT, MyMatrix& ret);
 
-void Mult(const MyMatrix &T, const std::complex<double> alpha, MyMatrix &ret);
+void Mult(const MyMatrix& T, const std::complex<double> alpha, MyMatrix& ret);
 
-void Equal(const MyMatrix &T, MyMatrix &ret);
+void Equal(const MyMatrix& T, MyMatrix& ret);
 
-void Conjugate(const MyMatrix &T, MyMatrix &ret);
+void Conjugate(const MyMatrix& T, MyMatrix& ret);
 
 #endif

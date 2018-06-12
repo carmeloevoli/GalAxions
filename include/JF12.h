@@ -61,19 +61,19 @@ public:
     bool isUsingTurbulent();
 
     // Regular field component
-    std::vector<double> getRegularField(const double &x, const double &y, const double &z) const;
+    std::vector<double> getRegularField(const double& x, const double& y, const double& z) const;
 
     // Regular and striated field component
     //Vector3d getStriatedField(const Vector3d& pos) const;
 
     // Brms of the turbulent field
-    double getTurbulentStrength(const double &x, const double &y, const double &z) const;
+    double getTurbulentStrength(const double& x, const double& y, const double& z) const;
 
     // Turbulent field component
-    std::vector<double> getTurbulentField(const double &x, const double &y, const double &z) const;
+    std::vector<double> getTurbulentField(const double& x, const double& y, const double& z) const;
 
     // All set field components
-    std::vector<double> GetB(const double &x, const double &y, const double &z) override;
+    std::vector<double> GetB(const double& x, const double& y, const double& z) override;
 };
 
 #endif /* INCLUDE_JF12_H_ */
