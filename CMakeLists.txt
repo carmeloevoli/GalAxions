@@ -23,7 +23,6 @@ set(GALCONDA_HDRS
         include/cgs.h
         include/constants.h
         include/damping.h
-        include/Ferriere07.h
         include/galconda.h
         include/gas.h
         include/JF12.h

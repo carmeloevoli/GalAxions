@@ -1,6 +1,7 @@
 #ifndef __GALCONDA_H
 #define __GALCONDA_H
 
+#include <cassert>
 #include <cstdlib>
 #include <algorithm>
 #include <iostream>
@@ -15,7 +16,6 @@
 #endif
 
 #include "gas.h"
-#include "Ferriere07.h"
 #include "magneticfield.h"
 #include "los.h"
 #include "Pshirkov.h"
@@ -34,8 +34,8 @@ enum GasDensityType {
 class GALCONDA {
 private:
 
-    double axionMass;
-    double gag;
+    double axion_mass;
+    double g_ag;
 
     std::string output_filename;
     std::ofstream output_ss;
@@ -50,8 +50,8 @@ private:
 
 public:
 
-    GALCONDA(const double& axionMass_, const double& gag_, const std::string& filename_)
-            :axionMass(axionMass_), gag(gag_) {
+    GALCONDA(const double& axion_mass_, const double& g_ag_, const std::string& filename_)
+            :axion_mass(axion_mass_), g_ag(g_ag_) {
         output_filename = filename_ + ".txt";
         los_filename = filename_ + ".los";
         output_ss.open(output_filename.c_str(), std::ofstream::out);

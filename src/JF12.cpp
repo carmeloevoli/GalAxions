@@ -223,14 +223,21 @@ double JF12Field::getTurbulentStrength(const double& x, const double& y, const d
 }
 
 std::vector<double> JF12Field::getTurbulentField(const double& x, const double& y, const double& z) const {
-    std::vector<double> b(3, 0); // TODO mettere un campo random
+    std::vector<double> b(3, 1);
+    b.at(0) /= normVector(b);
+    b.at(1) /= normVector(b);
+    b.at(2) /= normVector(b);
+
+    // TODO mettere un campo random
     return b; // (b * getTurbulentStrength(x, y, z));
 }
 
 std::vector<double> JF12Field::GetB(const double& x, const double& y, const double& z) {
+    double x_prime = -x;
+    double y_prime = -y;
     std::vector<double> b(3, 0);
     if (useTurbulent) {
-        std::vector<double> b_t = getTurbulentField(x, y, z);
+        std::vector<double> b_t = getTurbulentField(x_prime, y_prime, z);
         b.at(0) += b_t.at(0);
         b.at(1) += b_t.at(1);
         b.at(2) += b_t.at(2);
@@ -242,7 +249,7 @@ std::vector<double> JF12Field::GetB(const double& x, const double& y, const doub
      b.at(2) += b_s.at(2);
      }*/
     if (useRegular) {
-        std::vector<double> b_r = getRegularField(x, y, z);
+        std::vector<double> b_r = getRegularField(x_prime, y_prime, z);
         b.at(0) += b_r.at(0);
         b.at(1) += b_r.at(1);
         b.at(2) += b_r.at(2);

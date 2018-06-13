@@ -91,10 +91,8 @@ void GALCONDA::createLos(const double& ldeg_, const double& bdeg_, const double&
 
         distance_along_los += step_size;
 
-        if (sun_x < 0)
-            x_galaxy = sun_x + distance_along_los * los.cos_b_cos_l;
-        else
-            x_galaxy = sun_x - distance_along_los * los.cos_b_cos_l;
+        assert(sun_x > 0);
+        x_galaxy = sun_x - distance_along_los * los.cos_b_cos_l;
         y_galaxy = distance_along_los * los.cos_b_sin_l;
         z_galaxy = distance_along_los * los.sin_b;
 
@@ -116,12 +114,12 @@ void GALCONDA::createLos(const double& ldeg_, const double& bdeg_, const double&
 
         los.domains.push_back(d);
     }
-
-    std::reverse(los.domains.begin(), los.domains.end());
 }
 
 void GALCONDA::calculateProbability(const size_t& nEnergy_, const double& Emin_, const double& Emax_,
         const bool& do_damping_, const bool& do_output_) {
+
+    std::reverse(los.domains.begin(), los.domains.end());
 
     time_t timeBegin, timeEnd;
 
@@ -146,8 +144,8 @@ void GALCONDA::calculateProbability(const size_t& nEnergy_, const double& Emin_,
         const double Xsec_H2 = 0;
         const double Xsec_HI = 0;
 
-        const double gag_norm = gag / (5e-11 / GeV);
-        const double axion_mass_norm = axionMass / (1e-8 * eV);
+        const double gag_norm = g_ag / (5e-11 / GeV);
+        const double axion_mass_norm = axion_mass / (1e-8 * eV);
         const double Energy_norm = Energy / TeV;
         const double Delta_a_kpc = -7.8e-3 * pow2(axion_mass_norm) / Energy_norm;
 

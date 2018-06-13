@@ -116,10 +116,10 @@ void InitTC(const double cp, const double sp, const double theta, MyMatrix& TC) 
 
 void Mult(const MyMatrix& T1, const MyMatrix& TT, MyMatrix& ret) {
 
-    for (int i = 0; i < T1.GetNrows(); ++i) {
-        for (int j = 0; j < T1.GetNcols(); ++j) {
+    for (int i = 0; i < T1.get_nrows(); ++i) {
+        for (int j = 0; j < T1.get_ncols(); ++j) {
             ret(i, j) = std::complex<double>(0.0, 0.0);
-            for (int icol = 0; icol < T1.GetNcols(); ++icol) ret(i, j) += (T1(i, icol) * TT(icol, j));
+            for (int icol = 0; icol < T1.get_ncols(); ++icol) ret(i, j) += (T1(i, icol) * TT(icol, j));
         }
     }
 }
@@ -133,8 +133,8 @@ void Mult(const MyMatrix& T1, const MyMatrix& TT, const MyMatrix& TTT, MyMatrix&
 
 void Mult(const MyMatrix& T1, const std::complex<double> alpha, MyMatrix& ret) {
 
-    for (int i = 0; i < T1.GetNrows(); ++i) {
-        for (int j = 0; j < T1.GetNcols(); ++j) {
+    for (int i = 0; i < T1.get_nrows(); ++i) {
+        for (int j = 0; j < T1.get_ncols(); ++j) {
             ret(i, j) = T1(i, j) * alpha;
         }
     }
@@ -142,8 +142,8 @@ void Mult(const MyMatrix& T1, const std::complex<double> alpha, MyMatrix& ret) {
 
 void Equal(const MyMatrix& T1, MyMatrix& ret) {
 
-    for (int i = 0; i < T1.GetNrows(); ++i) {
-        for (int j = 0; j < T1.GetNcols(); ++j) {
+    for (int i = 0; i < T1.get_nrows(); ++i) {
+        for (int j = 0; j < T1.get_ncols(); ++j) {
             ret(i, j) = T1(i, j);
         }
     }
@@ -151,8 +151,8 @@ void Equal(const MyMatrix& T1, MyMatrix& ret) {
 
 void Add(const MyMatrix& T1, const MyMatrix& TT, const MyMatrix& TTT, MyMatrix& ret) {
 
-    for (int i = 0; i < T1.GetNrows(); ++i) {
-        for (int j = 0; j < T1.GetNcols(); ++j) {
+    for (int i = 0; i < T1.get_nrows(); ++i) {
+        for (int j = 0; j < T1.get_ncols(); ++j) {
             ret(i, j) = (T1(i, j) + TT(i, j) + TTT(i, j));
         }
     }
@@ -160,8 +160,8 @@ void Add(const MyMatrix& T1, const MyMatrix& TT, const MyMatrix& TTT, MyMatrix& 
 
 void Subtract(const MyMatrix& T1, const MyMatrix& TT, MyMatrix& ret) {
 
-    for (int i = 0; i < T1.GetNrows(); ++i) {
-        for (int j = 0; j < T1.GetNcols(); ++j) {
+    for (int i = 0; i < T1.get_nrows(); ++i) {
+        for (int j = 0; j < T1.get_ncols(); ++j) {
             ret(i, j) = (T1(i, j) - TT(i, j));
         }
     }
@@ -169,8 +169,8 @@ void Subtract(const MyMatrix& T1, const MyMatrix& TT, MyMatrix& ret) {
 
 void Conjugate(const MyMatrix& T1, MyMatrix& ret) {
 
-    for (int i = 0; i < T1.GetNrows(); ++i) {
-        for (int j = 0; j < T1.GetNcols(); ++j) {
+    for (int i = 0; i < T1.get_nrows(); ++i) {
+        for (int j = 0; j < T1.get_ncols(); ++j) {
             ret(i, j) = conj(T1(j, i));
         }
     }

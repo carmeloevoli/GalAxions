@@ -8,5 +8,7 @@ double Cordes91::get(const double& x, const double& y, const double& z) const {
 }
 
 double YMW16::get(const double& x, const double& y, const double& z) const {
-    return ymw16_ne(x / pc, y / pc, z / pc) / cm3;
+    double x_prime = -y;
+    double y_prime = x;
+    return ymw16_ne(x_prime / pc, y_prime / pc, z / pc) / cm3;
 }

@@ -1,4 +1,4 @@
-#include "Ferriere07.h"
+#include "gas.h"
 
 double phi(const double& r_pc, const double& z_pc) {
     double C1 = 8.887e3;
@@ -35,8 +35,8 @@ double Ferriere07::wim(double x_pc, double y_pc, double z_pc) const {
 }
 
 double Ferriere07::vhim(double x_pc, double y_pc, double z_pc) const {
-    double eta = y_pc * cos_alphavh + z_pc * sin_alphavh;
-    double zeta = -y_pc * sin_alphavh + z_pc * cos_alphavh;
+    double eta = y_pc * cos_alpha_vh + z_pc * sin_alpha_vh;
+    double zeta = -y_pc * sin_alpha_vh + z_pc * cos_alpha_vh;
     double A = (pow2(x_pc) + pow2(eta)) / pow2(Lvh);
     double B = pow2(zeta) / pow2(Hvh);
     return 0.29 * std::exp(-(A + B));

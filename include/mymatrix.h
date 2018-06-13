@@ -50,11 +50,11 @@ public:
 
     std::complex<double>& operator()(int i, int j) { return elements[i][j]; }
 
-    inline int GetNcols() const {
+    inline int get_ncols() const {
         return 3;
     }
 
-    inline int GetNrows() const {
+    inline int get_nrows() const {
         return 3;
     }
 
