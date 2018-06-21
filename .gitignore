@@ -10,3 +10,6 @@ plots/*.pyc
 .project
 .settings/
 
+# CLION
+.idea
+cmake-build-debug

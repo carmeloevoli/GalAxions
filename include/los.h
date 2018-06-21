@@ -6,6 +6,9 @@
 #include "constants.h"
 
 struct domain {
+  double magnetic_field_x;
+  double magnetic_field_y;
+  double magnetic_field_z;
   double magnetic_field_perp;
   double magnetic_field_total;
   double distance;

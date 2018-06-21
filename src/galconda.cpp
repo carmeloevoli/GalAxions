@@ -45,6 +45,9 @@ void GALCONDA::printLos(const double& rmax_) {
     los_ss << std::scientific << std::setprecision(5);
     for (auto domain : los.domains) {
         los_ss << domain.distance / kpc << "\t";
+        los_ss << domain.magnetic_field_x / muG << "\t";
+        los_ss << domain.magnetic_field_y / muG << "\t";
+        los_ss << domain.magnetic_field_z / muG << "\t";
         los_ss << domain.magnetic_field_perp / muG << "\t";
         los_ss << domain.magnetic_field_total / muG << "\t";
         los_ss << domain.psik << "\t";
@@ -110,7 +113,7 @@ void GALCONDA::createLos(const double& ldeg_, const double& bdeg_, const double&
             ref_direction[2] /= B_perp_norm;
         }
 
-        domain d = {B_perp_norm, B_total_norm, distance_along_los, get_psik(ref_direction, B_perp), n_e, 0, 0};
+        domain d = {B_perp[0], B_perp[1], B_perp[2], B_perp_norm, B_total_norm, distance_along_los, get_psik(ref_direction, B_perp), n_e, 0, 0};
 
         los.domains.push_back(d);
     }
